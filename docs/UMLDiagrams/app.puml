@@ -1,0 +1,129 @@
+@startuml
+title Pedido, LineaPedido y Cliente
+
+
+/'
+class User?? {
+}
+class Role??{
+
+}
+class Teacher{
+    id : int
+    name : string
+    surname : string
+    email : string
+    password : string
+}
+class Student{
+    id : int
+    name : string
+    surname : string
+    email : string
+    password : string
+}
+class Languages{
+    id_language : int
+    name : string
+}
+class Class{
+    id_class : int
+    publisher : Teacher | Student
+    language : spanish | english | french | german | italian
+    level : A1 | A2 | B1 | B2 | C1 | C2
+    duration (minutes) : int
+    schedule : ????
+    price : float
+}
+'/
+
+class User {
+    +UUID id
+    +String username
+    +String email
+    +String encryptedPassword
+    +Date createdAt
+    +Boolean isActive
+    +register()
+    +login()
+    +logout()
+}
+
+class Publisher {
+    +String bio
+    +List<String spokenLanguages
+    +Float earningsBalance
+    +verifyIdentity()
+    +requestWithdrawal()
+}
+
+class Student {
+    +String preferredLanguage
+    +Int creditScore
+    +browseCourses()
+    +addToCart(Course course)
+    +checkout()
+}
+
+class Course {
+    +UUID id
+    +String title
+    +String description
+    +
+    +Float price
+    +publish()
+    +updateDetails()
+}
+
+class ShoppingCart {
+    +UUID id
+    +Float totalPrice
+    +Date lastUpdated
+    +addCourse(Course course)
+    +removeCourse(Course course)
+    +checkout()  // Finalizes the purchase
+}
+
+class Order {
+    +UUID id
+    +String status   // Example: "Pending", "Completed"
+    +Float totalPaid
+    +Date purchaseDate
+    +processPayment()
+    +generateInvoice()
+}
+
+class OrderItem {
+    +UUID id
+    +Float paidPrice
+    +Date accessExpiry
+    +Course course    // References the course purchased
+}
+
+class PaymentMethod {
+    +UUID id
+    +String last4Digits
+    +String type   // E.g., "Credit Card", "PayPal"
+    +processPayment()  // Processes the payment
+}
+class ShopCartItem {
+    +UUID id
+    +Date addedAt
+    +Float price
+    +Course course    // References the course selected
+}
+
+
+User <|-- Publisher
+User <|-- Student
+Publisher -- Course : publishes
+
+Student -- ShoppingCart : has
+ShopCartItem -- ShoppingCart : contains
+ShopCartItem -- Course : selected
+Student -- Order : places
+Order -- OrderItem : contains
+OrderItem -- Course : purchased
+Order -- PaymentMethod : uses
+
+@enduml
