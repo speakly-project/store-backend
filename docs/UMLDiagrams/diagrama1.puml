@@ -1,0 +1,71 @@
+@startuml
+title Plataforma de Cursos de Idiomas - Tienda Simplificada
+
+' Usuarios
+class User <<Domain>> {
+    +UUID id
+    +String username
+    +String email
+    +String encryptedPassword
+    +Set<Role> roles
+    +Float earningsBalance  ' Solo para profesores
+    +Date createdAt
+}
+
+class Role <<Domain>> {
+    +String name
+}
+
+' Cursos
+class Course <<Domain>> {
+    +UUID id
+    +String title
+    +String description
+    +Float price
+    +String language
+    +String level
+    +UUID teacherId
+}
+
+' Carrito de compras
+class ShoppingCart <<Domain>> {
+    +UUID id
+    +UUID studentId
+    +Float totalPrice
+    +Date lastUpdated
+}
+
+class CartItem <<Domain>> {
+    +UUID id
+    +UUID courseId
+    +Float price
+}
+
+' Pedidos
+class Order <<Domain>> {
+    +UUID id
+    +UUID studentId
+    +Float totalPaid
+    +String status
+    +Date purchaseDate
+}
+
+class OrderItem <<Domain>> {
+    +UUID id
+    +UUID orderId
+    +UUID courseId
+    +Float paidPrice
+    +Date accessExpiry
+}
+
+' Relaciones
+User "1" *-- "*" Course : publishes
+User "1" *-- "*" Order : places
+User "1" *-- "1" ShoppingCart : has
+
+ShoppingCart "1" *-- "*" CartItem : contains
+CartItem "1" --> "1" Course : refers
+
+Order "1" *-- "*" OrderItem : contains
+OrderItem "1" --> "1" Course : purchased
+@enduml
