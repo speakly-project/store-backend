@@ -8,6 +8,8 @@ import es.speakly.store_backend.controller.webmodel.response.UserSummaryResponse
 import es.speakly.store_backend.domain.dto.UserDto;
 import es.speakly.store_backend.domain.model.Page;
 import es.speakly.store_backend.domain.service.UserService;
+import es.speakly.store_backend.exceptions.DtoValidator;
+import es.speakly.store_backend.mappers.UserMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,19 +44,19 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDetailResponse> findUserById(@PathVariable Long id) {
-        UserDetailResponse userDetailResponse = UserMapper.fromUserDtoToUserDetailResponse(userService.findById(id));
+        UserDetailResponse userDetailResponse = UserMapper.fromUserDtoToUserDetailResponse(userService.findById(id).orElse(null));
         return new ResponseEntity<>(userDetailResponse, HttpStatus.OK);
     }
 
     @GetMapping("/{username}")
     public ResponseEntity<UserDetailResponse> findUserByUsername(@PathVariable String username) {
-        UserDetailResponse userDetailResponse = UserMapper.fromUserDtoToUserDetailResponse(userService.findByUsername(username));
+        UserDetailResponse userDetailResponse = UserMapper.fromUserDtoToUserDetailResponse(userService.findByUsername(username).orElse(null));
         return new ResponseEntity<>(userDetailResponse, HttpStatus.OK);
     }
 
     @GetMapping("/{email}")
     public ResponseEntity<UserDetailResponse> findUserByEmail(@PathVariable String email) {
-        UserDetailResponse userDetailResponse = UserMapper.fromUserDtoToUserDetailResponse(userService.findByEmail(email));
+        UserDetailResponse userDetailResponse = UserMapper.fromUserDtoToUserDetailResponse(userService.findByEmail(email).orElse(null));
         return new ResponseEntity<>(userDetailResponse, HttpStatus.OK);
     }
 

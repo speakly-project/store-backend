@@ -4,10 +4,16 @@ package es.speakly.store_backend.persistence.repository;
 import es.speakly.store_backend.domain.dto.UserDto;
 import es.speakly.store_backend.domain.model.Page;
 import es.speakly.store_backend.domain.repository.UserRepository;
+import es.speakly.store_backend.persistence.dao.Impl.entity.UserJpaEntity;
 
 import java.util.Optional;
 
 public class UserRepositoryImpl implements UserRepository {
+    private final UserJpaEntity userJpaEntity;
+
+    public UserRepositoryImpl(UserJpaEntity userJpaEntity) {
+        this.userJpaEntity = userJpaEntity;
+    }
 
 
     @Override
