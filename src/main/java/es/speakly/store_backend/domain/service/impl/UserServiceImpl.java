@@ -60,8 +60,8 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Email " + user.email() + " is already taken");
         }
         user.coursesTaken().forEach(course -> {
-            if (course.getId() == null || course.getId() <= 0) {
-                throw new IllegalArgumentException("Course id " + course.getId() + " is not valid");
+            if (course.id() == null || course.id() <= 0) {
+                throw new IllegalArgumentException("Course id " + course.id() + " is not valid");
             }
         });
 
@@ -79,8 +79,8 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("User with " + user.username() + " already exists");
         });
         user.coursesTaken().forEach(course -> {
-            if (course.getId() == null || course.getId() <= 0) {
-                throw new IllegalArgumentException("Course id " + course.getId() + " is not valid");
+            if (course.id() == null || course.id() <= 0) {
+                throw new IllegalArgumentException("Course id " + course.id() + " is not valid");
             }
         });
         return userRepository.save(user);

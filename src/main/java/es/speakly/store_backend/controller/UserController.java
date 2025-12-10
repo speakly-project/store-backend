@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/speakly/users")
+@RequestMapping("api/speakly/users")
 public class UserController {
     private final UserService userService;
 

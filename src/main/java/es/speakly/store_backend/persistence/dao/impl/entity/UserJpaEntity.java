@@ -1,14 +1,15 @@
-package es.speakly.store_backend.persistence.dao.Impl.entity;
+package es.speakly.store_backend.persistence.dao.impl.entity;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "users")
-public class UserJpaEntity {
+public class UserJpaEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,11 +20,11 @@ public class UserJpaEntity {
     private String encryptedPassword;
     private LocalDateTime createdAt;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CoursesJpaEntity> coursesTaken = new ArrayList<>();
+    private final List<CourseJpaEntity> coursesTaken = new ArrayList<>();
 
     public UserJpaEntity() {}
 
-    public MovieJpaEntity(Long id, String username, String email, String profilePictureUrl, String encryptedPassword, LocalDateTime createdAt, List<CoursesJpaEntity> coursesTaken) {
+    public UserJpaEntity(Long id, String username, String email, String profilePictureUrl, String encryptedPassword, LocalDateTime createdAt, List<CourseJpaEntity> coursesTaken) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -33,14 +34,14 @@ public class UserJpaEntity {
         setCourses(coursesTaken);
     }
 
-    public List<CoursesJpaEntity> getCoursesTaken() {
+    public List<CourseJpaEntity> getCoursesTaken() {
         return coursesTaken;
     }
 
-    public void setCourses(List<CoursesJpaEntity> coursesTaken) {
+    public void setCourses(List<CourseJpaEntity> coursesTaken) {
         this.coursesTaken.clear();
-        for (CoursesJpaEntity courses : coursesTaken) {
-            CoursesJpaEntity coursesJpaEntity = new CoursesJpaEntity();
+        for (CourseJpaEntity courses : coursesTaken) {
+            CourseJpaEntity coursesJpaEntity = new CourseJpaEntity();
             this.coursesTaken.add(coursesJpaEntity);
         }
     }
@@ -82,8 +83,4 @@ public class UserJpaEntity {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-
-
-
-
 }

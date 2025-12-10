@@ -1,7 +1,7 @@
 package es.speakly.store_backend.persistence.dao;
 
 
-import es.speakly.store_backend.persistence.dao.Impl.entity.UserJpaEntity;
+import es.speakly.store_backend.persistence.dao.impl.entity.UserJpaEntity;
 
 import java.util.Optional;
 

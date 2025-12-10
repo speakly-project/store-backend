@@ -12,14 +12,13 @@
 -- );
 
 CREATE TABLE users (
-                       id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                       username VARCHAR(255) NOT NULL UNIQUE,
-                       email VARCHAR(255) NOT NULL UNIQUE,
-                       profile_picture_url VARCHAR(512),
-                       encrypted_password VARCHAR(255) NOT NULL,
-                       created_at DATE
-
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    profile_picture_url VARCHAR(512),
+    encrypted_password VARCHAR(255) NOT NULL,
+    created_at DATE
+);
 
 -- CREATE TABLE user_roles (
 --                             user_id UUID NOT NULL,
@@ -41,9 +40,10 @@ CREATE TABLE courses (
                          language VARCHAR(50),
                          level VARCHAR(50),
                          user_id INT NOT NULL,
-                         FOREIGN KEY (user_id) REFERENCES users(id),
-                         INDEX idx_courses_user (user_id)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+                         FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE INDEX idx_courses_user ON courses (user_id);
 
 -- ================
 -- SHOPPING CART

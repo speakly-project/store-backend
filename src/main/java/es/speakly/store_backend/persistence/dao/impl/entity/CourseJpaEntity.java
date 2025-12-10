@@ -1,31 +1,40 @@
-package es.speakly.store_backend.domain.model;
+package es.speakly.store_backend.persistence.dao.impl.entity;
 
+import jakarta.persistence.*;
+
+import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.UUID;
+import java.util.List;
 
+@Entity
+@Table(name = "courses")
+public class CourseJpaEntity implements Serializable {
 
-
-public class Course {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
     private String description;
     private BigDecimal price;
     private String language;
     private String level;
-    private Long teacherId;
 
-    public Course(Long id, String title, String description, BigDecimal price,
-                  String language, String level, Long teacherId) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserJpaEntity user;
+
+    public CourseJpaEntity() {}
+
+    public CourseJpaEntity(Long id, String title, String description, BigDecimal price,
+                           String language, String level, UserJpaEntity user) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.price = price;
         this.language = language;
         this.level = level;
-        this.teacherId = teacherId;
+        this.user = user;
     }
-
 
     public Long getId() {
         return id;
@@ -59,11 +68,11 @@ public class Course {
         this.price = price;
     }
 
-    public String getLanguageId() {
+    public String getLanguage() {
         return language;
     }
 
-    public void setLanguageId(String language) {
+    public void setLanguage(String language) {
         this.language = language;
     }
 
@@ -75,15 +84,12 @@ public class Course {
         this.level = level;
     }
 
-    public Long getTeacherId() {
-        return teacherId;
+    public UserJpaEntity getUser() {
+        return user;
     }
 
-    public void setTeacherId(Long teacherId) {
-        this.teacherId = teacherId;
+    public void setUser(UserJpaEntity user) {
+        this.user = user;
     }
 
-    public String getLanguage() {
-        return language;
-    }
 }

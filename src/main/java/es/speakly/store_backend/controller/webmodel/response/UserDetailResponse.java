@@ -11,7 +11,7 @@ public record UserDetailResponse(
     String password,
     String profilePictureUrl,
     LocalDateTime createdAt,
-    List<UserSummaryResponse> coursesTaken
+    List<CourseSummaryResponse> coursesTaken
 ) {
 
 }

@@ -1,6 +1,6 @@
-package es.speakly.store_backend.persistence.dao.Impl;
+package es.speakly.store_backend.persistence.dao.impl;
 
-import es.speakly.store_backend.persistence.dao.Impl.entity.UserJpaEntity;
+import es.speakly.store_backend.persistence.dao.impl.entity.UserJpaEntity;
 import es.speakly.store_backend.persistence.dao.UserDao;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
