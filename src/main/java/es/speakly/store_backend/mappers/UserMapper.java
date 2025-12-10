@@ -7,6 +7,7 @@ import es.speakly.store_backend.controller.webmodel.response.UserSummaryResponse
 import es.speakly.store_backend.domain.dto.CourseDto;
 import es.speakly.store_backend.domain.dto.UserDto;
 import es.speakly.store_backend.domain.model.Course;
+import es.speakly.store_backend.domain.model.User;
 import es.speakly.store_backend.persistence.dao.impl.entity.CourseJpaEntity;
 import es.speakly.store_backend.persistence.dao.impl.entity.UserJpaEntity;
 
@@ -93,7 +94,7 @@ public class UserMapper {
         );
     }
 
-    public UserDto fromUserEntityToUserDto(UserJpaEntity userEntity) {
+    public static UserDto fromUserEntityToUserDto(UserJpaEntity userEntity) {
         if (userEntity == null) {
             return null;
         }
@@ -111,7 +112,7 @@ public class UserMapper {
         );
     }
 
-    public UserJpaEntity fromUserDtoToUserEntity(UserDto userDto) {
+    public static UserJpaEntity fromUserDtoToUserEntity(UserDto userDto) {
         if (userDto == null) {
             return null;
         }
@@ -125,6 +126,42 @@ public class UserMapper {
             userDto.coursesTaken() != null ?
                     userDto.coursesTaken().stream()
                             .map(CourseMapper::fromCourseDtoToCourseEntity)
+                            .toList() : Collections.emptyList()
+        );
+    }
+
+    public static UserDto fromUserToUserDto(User user) {
+        if (user == null) {
+            return null;
+        }
+        return new UserDto(
+            user.getId(),
+            user.getUsername(),
+            user.getEmail(),
+            user.getProfilePictureUrl(),
+            user.getEncryptedPassword(),
+            user.getCreatedAt(),
+            user.getCoursesTaken() != null ?
+                    user.getCoursesTaken().stream()
+                            .map(CourseMapper::fromCourseToCourseDto)
+                            .toList() : Collections.emptyList()
+        );
+    }
+
+    public static User fromUserDtoToUser(UserDto userDto) {
+        if (userDto == null) {
+            return null;
+        }
+        return new User(
+            userDto.id(),
+            userDto.username(),
+            userDto.email(),
+            userDto.profilePictureUrl(),
+            userDto.password(),
+            userDto.createdAt(),
+            userDto.coursesTaken() != null ?
+                    userDto.coursesTaken().stream()
+                            .map(CourseMapper::fromCourseDtoToCourse)
                             .toList() : Collections.emptyList()
         );
     }

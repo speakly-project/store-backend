@@ -4,6 +4,10 @@ import es.speakly.store_backend.domain.dto.UserDto;
 import es.speakly.store_backend.domain.model.Page;
 import es.speakly.store_backend.domain.repository.UserRepository;
 import es.speakly.store_backend.domain.service.UserService;
+import es.speakly.store_backend.exceptions.BusinessException;
+import es.speakly.store_backend.exceptions.ResourceNotFoundException;
+import es.speakly.store_backend.exceptions.ValidationException;
+import es.speakly.store_backend.mappers.UserMapper;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
@@ -25,7 +29,8 @@ public class UserServiceImpl implements UserService {
         Page<UserDto> movieEntityPage =  userRepository
                 .findAll(pageNumber, pageSize);
         List<UserDto> itemsDto = movieEntityPage.data()
-                .stream()
+                .stream().map(UserMapper::fromUserDtoToUser)
+                .map(UserMapper::fromUserToUserDto)
                 .toList();
         return new Page<>(
                 itemsDto,
@@ -36,32 +41,38 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserDto> findById(Long id) {
-        return userRepository.findById(id);
+    public UserDto getById(Long id) {
+        return userRepository.findById(id)
+                .map(UserMapper::fromUserDtoToUser)
+                .map(UserMapper::fromUserToUserDto).orElseThrow(() -> new ResourceNotFoundException("User with id " + id + " not found"));
     }
 
     @Override
-    public Optional<UserDto> findByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public UserDto getByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .map(UserMapper::fromUserDtoToUser)
+                .map(UserMapper::fromUserToUserDto).orElseThrow(() -> new ResourceNotFoundException("User with email " + email + " not found"));
     }
 
     @Override
-    public Optional<UserDto> findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public UserDto getByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .map(UserMapper::fromUserDtoToUser)
+                .map(UserMapper::fromUserToUserDto).orElseThrow(() -> new ResourceNotFoundException("User with username " + username + " not found"));
     }
 
     @Override
     @Transactional
     public UserDto createUser(UserDto user) {
-        if (findByUsername(user.username()).isPresent()) {
-            throw new IllegalArgumentException("Username " + user.username() + " is already taken");
+        if (userRepository.findByUsername(user.username()).isPresent()) {
+            throw new BusinessException("Username " + user.username() + " is already taken");
         }
-        if (findByEmail(user.email()).isPresent()) {
-            throw new IllegalArgumentException("Email " + user.email() + " is already taken");
+        if (userRepository.findByEmail(user.email()).isPresent()) {
+            throw new BusinessException("Email " + user.email() + " is already taken");
         }
         user.coursesTaken().forEach(course -> {
             if (course.id() == null || course.id() <= 0) {
-                throw new IllegalArgumentException("Course id " + course.id() + " is not valid");
+                throw new ValidationException("Course id " + course.id() + " is not valid");
             }
         });
 
@@ -71,16 +82,16 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto updateUser(UserDto user) {
-        userRepository.findById(user.id()).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        userRepository.findById(user.id()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         userRepository.findByEmail(user.email()).filter(b->!b.id().equals(user.id())).ifPresent(b->{
-            throw new IllegalArgumentException("User with " + user.email() + " already exists");
+            throw new BusinessException("User with " + user.email() + " already exists");
         });
         userRepository.findByUsername(user.username()).filter(b->!b.id().equals(user.id())).ifPresent(b->{
-            throw new IllegalArgumentException("User with " + user.username() + " already exists");
+            throw new BusinessException("User with " + user.username() + " already exists");
         });
         user.coursesTaken().forEach(course -> {
             if (course.id() == null || course.id() <= 0) {
-                throw new IllegalArgumentException("Course id " + course.id() + " is not valid");
+                throw new ValidationException("Course id " + course.id() + " is not valid");
             }
         });
         return userRepository.save(user);
@@ -91,7 +102,7 @@ public class UserServiceImpl implements UserService {
     public void delete(Long id) {
         Optional<UserDto> userDto = userRepository.findById(id);
         if (userDto.isEmpty()){
-            throw new IllegalArgumentException("User with id " + id + " does not exist");
+            throw new ResourceNotFoundException("User with id " + id + " does not exist");
         }
         userRepository.delete(id);
     }

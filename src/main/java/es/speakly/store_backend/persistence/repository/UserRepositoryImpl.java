@@ -13,11 +13,9 @@ import java.util.Optional;
 
 public class UserRepositoryImpl implements UserRepository {
     private final UserDao userDao;
-    private final UserMapper userMapper;
 
     public UserRepositoryImpl(UserDao userDao) {
         this.userDao = userDao;
-        this.userMapper = UserMapper.getInstance();
     }
 
 
@@ -25,7 +23,7 @@ public class UserRepositoryImpl implements UserRepository {
     public Page<UserDto> findAll(int pageNumber, int pageSize) {
         List<UserJpaEntity> entities = userDao.findAll(pageNumber, pageSize);
         List<UserDto> userDtos = entities.stream()
-                .map(userMapper::fromUserEntityToUserDto)
+                .map(UserMapper::fromUserEntityToUserDto)
                 .toList();
         long totalElements = userDao.count();
         return new Page<>(userDtos, pageNumber, pageSize, totalElements);
@@ -34,31 +32,29 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Optional<UserDto> findById(Long id) {
         return userDao.findById(id)
-                .map(userMapper::fromUserEntityToUserDto);
+                .map(UserMapper::fromUserEntityToUserDto);
     }
 
     @Override
     public Optional<UserDto> findByEmail(String email) {
         return userDao.findByEmail(email)
-                .map(userMapper::fromUserEntityToUserDto);
+                .map(UserMapper::fromUserEntityToUserDto);
     }
 
     @Override
     public Optional<UserDto> findByUsername(String username) {
         return userDao.findByUsername(username)
-                .map(userMapper::fromUserEntityToUserDto);
+                .map(UserMapper::fromUserEntityToUserDto);
     }
 
     @Override
     public UserDto save(UserDto user) {
-        UserJpaEntity entity = userMapper.fromUserDtoToUserEntity(user);
-        UserJpaEntity savedEntity;
+        UserJpaEntity entity = UserMapper.fromUserDtoToUserEntity(user);
+
         if (user.id() == null) {
-            savedEntity = userDao.insert(entity);
-        } else {
-            savedEntity = userDao.update(entity);
+            return UserMapper.fromUserEntityToUserDto(userDao.insert(entity));
         }
-        return userMapper.fromUserEntityToUserDto(savedEntity);
+        return UserMapper.fromUserEntityToUserDto(userDao.update(entity));
     }
 
     @Override

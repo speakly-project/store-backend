@@ -7,9 +7,9 @@ import java.util.Optional;
 
 public interface UserService {
     Page<UserDto> getAll(int pageNumber, int pageSize);
-    Optional<UserDto> findById(Long id);
-    Optional<UserDto> findByEmail(String email);
-    Optional<UserDto> findByUsername(String username);
+    UserDto getById(Long id);
+    UserDto getByEmail(String email);
+    UserDto getByUsername(String username);
     UserDto createUser(UserDto user);
     UserDto updateUser(UserDto user);
     void delete(Long id);

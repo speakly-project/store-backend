@@ -44,19 +44,19 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDetailResponse> findUserById(@PathVariable Long id) {
-        UserDetailResponse userDetailResponse = UserMapper.fromUserDtoToUserDetailResponse(userService.findById(id).orElse(null));
+        UserDetailResponse userDetailResponse = UserMapper.fromUserDtoToUserDetailResponse(userService.getById(id));
         return new ResponseEntity<>(userDetailResponse, HttpStatus.OK);
     }
 
     @GetMapping("/{username}")
     public ResponseEntity<UserDetailResponse> findUserByUsername(@PathVariable String username) {
-        UserDetailResponse userDetailResponse = UserMapper.fromUserDtoToUserDetailResponse(userService.findByUsername(username).orElse(null));
+        UserDetailResponse userDetailResponse = UserMapper.fromUserDtoToUserDetailResponse(userService.getByUsername(username));
         return new ResponseEntity<>(userDetailResponse, HttpStatus.OK);
     }
 
     @GetMapping("/{email}")
     public ResponseEntity<UserDetailResponse> findUserByEmail(@PathVariable String email) {
-        UserDetailResponse userDetailResponse = UserMapper.fromUserDtoToUserDetailResponse(userService.findByEmail(email).orElse(null));
+        UserDetailResponse userDetailResponse = UserMapper.fromUserDtoToUserDetailResponse(userService.getByEmail(email));
         return new ResponseEntity<>(userDetailResponse, HttpStatus.OK);
     }
 

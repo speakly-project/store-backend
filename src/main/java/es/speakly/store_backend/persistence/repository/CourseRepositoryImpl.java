@@ -52,13 +52,11 @@ public class CourseRepositoryImpl implements CourseRepository {
     @Override
     public CourseDto save(CourseDto course) {
         CourseJpaEntity entity = CourseMapper.fromCourseDtoToCourseEntity(course);
-        CourseJpaEntity savedEntity;
         if (course.id() == null) {
-            savedEntity = courseDao.insert(entity);
-        } else {
-            savedEntity = courseDao.update(entity);
+            return CourseMapper.fromCourseEntityToCourseDto(courseDao.insert(entity));
         }
-        return CourseMapper.fromCourseEntityToCourseDto(savedEntity);
+        return CourseMapper.fromCourseEntityToCourseDto(courseDao.update(entity));
+
     }
 
     @Override
