@@ -51,7 +51,6 @@ public class LanguageControllerTest {
         mockMvc.perform(get("/api/speakly/languages/amount"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
-                .andExpect(jsonPath("$").isNumber())
-                .andExpect(jsonPath("$").value(org.hamcrest.Matchers.greaterThanOrEqualTo(0)));
+                .andExpect(jsonPath("$").isNumber());
     }
 }

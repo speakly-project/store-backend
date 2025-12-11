@@ -50,6 +50,15 @@ create table languages (
     code VARCHAR(4) NOT NULL UNIQUE,
     name VARCHAR(15) NOT NULL UNIQUE
 );
+
+-- ================
+-- LEVELS (CEFR + Custom)
+-- ================
+create table levels (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(20) NOT NULL UNIQUE
+);
+
 -- ================
 -- SHOPPING CART
 -- ================

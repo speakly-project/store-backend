@@ -97,3 +97,18 @@ insert into languages (code, name) values
                                         ('no', 'Norwegian'),
                                         ('pl', 'Polish'),
                                         ('gr', 'Greek');
+
+-- ================
+-- LEVELS (CEFR + Custom levels)
+-- ================
+insert into levels (name) values
+                              ('A1'),
+                              ('A2'),
+                              ('B1'),
+                              ('B2'),
+                              ('C1'),
+                              ('C2'),
+                              ('BASIC'),
+                              ('INTERMEDIATE'),
+                              ('ADVANCED');
+
