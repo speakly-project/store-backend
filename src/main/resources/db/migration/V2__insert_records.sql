@@ -80,3 +80,20 @@ INSERT INTO courses (title, description, price, language, level, user_id) VALUES
                                                                               ('Japanese Basics', 'Learn Japanese alphabet & essentials.', 16.99, 'Japanese', 'Beginner', 30),
                                                                               ('Japanese Conversation', 'Improve spoken Japanese.', 25.99, 'Japanese', 'Intermediate', 30);
 
+insert into languages (code, name) values
+                                        ('en', 'English'),
+                                        ('es', 'Spanish'),
+                                        ('fr', 'French'),
+                                        ('de', 'German'),
+                                        ('pt', 'Portuguese'),
+                                        ('it', 'Italian'),
+                                        ('ja', 'Japanese'),
+                                        ('ko', 'Korean'),
+                                        ('zh', 'Chinese'),
+                                        ('ru', 'Russian'),
+                                        ('ar', 'Arabic'),
+                                        ('nl', 'Dutch'),
+                                        ('sv', 'Swedish'),
+                                        ('no', 'Norwegian'),
+                                        ('pl', 'Polish'),
+                                        ('gr', 'Greek');

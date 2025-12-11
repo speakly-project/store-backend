@@ -44,7 +44,12 @@ CREATE TABLE courses (
 );
 
 CREATE INDEX idx_courses_user ON courses (user_id);
-
+-- https://es.wikipedia.org/wiki/ISO_639-1
+create table languages (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    code VARCHAR(4) NOT NULL UNIQUE,
+    name VARCHAR(15) NOT NULL UNIQUE
+);
 -- ================
 -- SHOPPING CART
 -- ================
