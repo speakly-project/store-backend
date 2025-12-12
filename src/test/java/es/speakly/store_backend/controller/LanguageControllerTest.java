@@ -23,7 +23,7 @@ public class LanguageControllerTest {
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.pageNumber").value(1))
-                .andExpect(jsonPath("$.pageSize").value(10))
+                .andExpect(jsonPath("$.pageSize").value(20))
                 .andExpect(jsonPath("$.totalElements").isNumber());
     }
 
