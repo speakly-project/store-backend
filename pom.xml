@@ -34,6 +34,7 @@
         <com.fasterxml.jackson.version>2.20.1</com.fasterxml.jackson.version>
         <org.flywaydb.version>11.17.0</org.flywaydb.version>
         <com.h2database.version>2.3.232</com.h2database.version>
+        <org.mindrot.version>0.4</org.mindrot.version>
 	</properties>
 	<dependencies>
         <dependency>
@@ -71,6 +72,11 @@
             <artifactId>h2</artifactId>
             <version>${com.h2database.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>${org.mindrot.version}</version>
         </dependency>
 	</dependencies>
 

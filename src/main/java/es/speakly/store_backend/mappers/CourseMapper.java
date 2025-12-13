@@ -138,6 +138,14 @@ public class CourseMapper {
         if (courseDto == null) {
             return null;
         }
+//        CourseJpaEntity courseEntity = new CourseJpaEntity();
+//        courseEntity.setId(courseDto.id());
+//        courseEntity.setTitle(courseDto.title());
+//        courseEntity.setDescription(courseDto.description());
+//        courseEntity.setPrice(courseDto.price());
+//        courseEntity.setLanguage(courseDto.language());
+//        courseEntity.setLevel(courseDto.level());
+//        return courseEntity;
         return new CourseJpaEntity(
                 courseDto.id(),
                 courseDto.title(),

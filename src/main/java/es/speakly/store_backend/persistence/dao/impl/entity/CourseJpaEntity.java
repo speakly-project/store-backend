@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,9 +20,14 @@ public class CourseJpaEntity implements Serializable {
     private String language;
     private String level;
 
+    // ManyToOne: The instructor/creator of the course
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserJpaEntity user;
+
+    // ManyToMany: Students who have enrolled/taken this course
+    @ManyToMany(mappedBy = "coursesTaken")
+    private List<UserJpaEntity> students = new ArrayList<>();
 
     public CourseJpaEntity() {}
 
@@ -92,4 +98,11 @@ public class CourseJpaEntity implements Serializable {
         this.user = user;
     }
 
+    public List<UserJpaEntity> getStudents() {
+        return students;
+    }
+
+    public void setStudents(List<UserJpaEntity> students) {
+        this.students = students;
+    }
 }

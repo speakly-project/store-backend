@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -15,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 public class LevelControllerTest {
 
     @Autowired
@@ -22,6 +24,7 @@ public class LevelControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
 
     // ...existing GET tests...
 
@@ -180,7 +183,7 @@ public class LevelControllerTest {
     @Test
     void createLevel_SpecialCharacters_Success() throws Exception {
         // Arrange - Create a level with special characters
-        LevelInsertRequest specialCharLevel = new LevelInsertRequest("A1PLUS");
+        LevelInsertRequest specialCharLevel = new LevelInsertRequest("A1+");
 
         // Act & Assert
         mockMvc.perform(post("/api/speakly/levels")

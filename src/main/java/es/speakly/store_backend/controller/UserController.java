@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -48,14 +49,14 @@ public class UserController {
         return new ResponseEntity<>(userDetailResponse, HttpStatus.OK);
     }
 
-    @GetMapping("/{username}")
-    public ResponseEntity<UserDetailResponse> findUserByUsername(@PathVariable String username) {
+    @GetMapping("/username")
+    public ResponseEntity<UserDetailResponse> findUserByUsername(@RequestParam String username) {
         UserDetailResponse userDetailResponse = UserMapper.fromUserDtoToUserDetailResponse(userService.getByUsername(username));
         return new ResponseEntity<>(userDetailResponse, HttpStatus.OK);
     }
 
-    @GetMapping("/{email}")
-    public ResponseEntity<UserDetailResponse> findUserByEmail(@PathVariable String email) {
+    @GetMapping("/email")
+    public ResponseEntity<UserDetailResponse> findUserByEmail(@RequestParam String email) {
         UserDetailResponse userDetailResponse = UserMapper.fromUserDtoToUserDetailResponse(userService.getByEmail(email));
         return new ResponseEntity<>(userDetailResponse, HttpStatus.OK);
     }
@@ -63,6 +64,18 @@ public class UserController {
     @PostMapping
     public ResponseEntity<UserDetailResponse> createUser(@RequestBody UserInsertRequest userInsertRequest) {
         UserDto userDto = UserMapper.fromUserInsertRequestToUserDto(userInsertRequest);
+//        LocalDateTime createdAt = userInsertRequest.createdAt() != null
+//                ? userInsertRequest.createdAt()
+//                : LocalDateTime.now();
+//        UserDto userDtoWithCreatedAt = new UserDto(
+//                null,
+//                userDto.username(),
+//                userDto.email(),
+//                userDto.profilePictureUrl(),
+//                userDto.password(),
+//                createdAt,
+//                userDto.coursesTaken()
+//        );
         DtoValidator.validate(userDto);
         UserDto createdUserDto = userService.createUser(userDto);
         UserDetailResponse userDetailResponse = UserMapper.fromUserDtoToUserDetailResponse(createdUserDto);

@@ -6,13 +6,14 @@ import es.speakly.store_backend.controller.webmodel.response.UserDetailResponse;
 import es.speakly.store_backend.controller.webmodel.response.UserSummaryResponse;
 import es.speakly.store_backend.domain.dto.CourseDto;
 import es.speakly.store_backend.domain.dto.UserDto;
-import es.speakly.store_backend.domain.model.Course;
 import es.speakly.store_backend.domain.model.User;
 import es.speakly.store_backend.persistence.dao.impl.entity.CourseJpaEntity;
 import es.speakly.store_backend.persistence.dao.impl.entity.UserJpaEntity;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 public class UserMapper {
     private static UserMapper INSTANCE;
@@ -66,8 +67,8 @@ public class UserMapper {
             null,
             userInsertRequest.username(),
             userInsertRequest.email(),
-            userInsertRequest.password(),
             userInsertRequest.profilePictureUrl(),
+            userInsertRequest.password(),
             userInsertRequest.createdAt(),
             userInsertRequest.coursesTakenIds() != null ?
                     Arrays.stream(userInsertRequest.coursesTakenIds())
@@ -84,8 +85,8 @@ public class UserMapper {
             userUpdateRequest.id(),
             userUpdateRequest.username(),
             userUpdateRequest.email(),
-            userUpdateRequest.password(),
             userUpdateRequest.profilePictureUrl(),
+            userUpdateRequest.password(),
             userUpdateRequest.createAt(),
             userUpdateRequest.coursesIds() != null ?
                     Arrays.stream(userUpdateRequest.coursesIds())
@@ -116,17 +117,26 @@ public class UserMapper {
         if (userDto == null) {
             return null;
         }
+
+        // For ManyToMany relationship, we only need to set course IDs
+        // The DAO layer will fetch the actual managed entities
+        List<CourseJpaEntity> courses = new ArrayList<>();
+        if (userDto.coursesTaken() != null) {
+            for (CourseDto courseDto : userDto.coursesTaken()) {
+                CourseJpaEntity courseEntity = new CourseJpaEntity();
+                courseEntity.setId(courseDto.id());
+                courses.add(courseEntity);
+            }
+        }
+
         return new UserJpaEntity(
-            userDto.id(),
-            userDto.username(),
-            userDto.email(),
-            userDto.profilePictureUrl(),
-            userDto.password(),
-            userDto.createdAt(),
-            userDto.coursesTaken() != null ?
-                    userDto.coursesTaken().stream()
-                            .map(CourseMapper::fromCourseDtoToCourseEntity)
-                            .toList() : Collections.emptyList()
+                userDto.id(),
+                userDto.username(),
+                userDto.email(),
+                userDto.profilePictureUrl(),
+                userDto.password(),
+                userDto.createdAt(),
+                courses
         );
     }
 

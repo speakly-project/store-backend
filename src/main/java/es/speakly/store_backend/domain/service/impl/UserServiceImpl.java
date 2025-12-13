@@ -9,6 +9,7 @@ import es.speakly.store_backend.exceptions.ResourceNotFoundException;
 import es.speakly.store_backend.exceptions.ValidationException;
 import es.speakly.store_backend.mappers.UserMapper;
 import jakarta.transaction.Transactional;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,17 +27,17 @@ public class UserServiceImpl implements UserService {
         if (pageNumber < 1 || pageSize < 1){
             throw new IllegalArgumentException("Page number and size must be greater than 0");
         }
-        Page<UserDto> movieEntityPage =  userRepository
+        Page<UserDto> userEntityPage =  userRepository
                 .findAll(pageNumber, pageSize);
-        List<UserDto> itemsDto = movieEntityPage.data()
+        List<UserDto> itemsDto = userEntityPage.data()
                 .stream().map(UserMapper::fromUserDtoToUser)
                 .map(UserMapper::fromUserToUserDto)
                 .toList();
         return new Page<>(
                 itemsDto,
-                movieEntityPage.pageNumber(),
-                movieEntityPage.pageSize(),
-                movieEntityPage.totalElements()
+                userEntityPage.pageNumber(),
+                userEntityPage.pageSize(),
+                userEntityPage.totalElements()
         );
     }
 
@@ -76,7 +77,17 @@ public class UserServiceImpl implements UserService {
             }
         });
 
-        return userRepository.save(user);
+        String hashedPassword = BCrypt.hashpw(user.password(), BCrypt.gensalt());
+        UserDto createdUser = new UserDto(
+                null,
+                user.username(),
+                user.email(),
+                user.profilePictureUrl(),
+                hashedPassword,
+                user.createdAt(),
+                user.coursesTaken());
+
+        return userRepository.save(createdUser);
     }
 
     @Override

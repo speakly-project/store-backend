@@ -7,7 +7,7 @@
 -- USERS & ROLES
 -- ================
 
--- CREATE TABLE roles (
+-- CREATE TABLE role (
 --                        name VARCHAR(50) PRIMARY KEY
 -- );
 
@@ -19,18 +19,6 @@ CREATE TABLE users (
     encrypted_password VARCHAR(255) NOT NULL,
     created_at DATE
 );
-
--- CREATE TABLE user_roles (
---                             user_id UUID NOT NULL,
---                             role_name VARCHAR(50) NOT NULL,
---                             PRIMARY KEY (user_id, role_name),
---                             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
---                             FOREIGN KEY (role_name) REFERENCES roles(name) ON DELETE CASCADE
--- );
-
--- ================
--- COURSES
--- ================
 
 CREATE TABLE courses (
                          id INT PRIMARY KEY AUTO_INCREMENT,
@@ -44,6 +32,18 @@ CREATE TABLE courses (
 );
 
 CREATE INDEX idx_courses_user ON courses (user_id);
+
+CREATE TABLE user_courses (
+    user_id INT NOT NULL,
+    course_id INT NOT NULL,
+    enrolled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, course_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_user_courses_user ON user_courses(user_id);
+CREATE INDEX idx_user_courses_course ON user_courses(course_id);
 -- https://es.wikipedia.org/wiki/ISO_639-1
 create table languages (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -58,6 +58,30 @@ create table levels (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(20) NOT NULL UNIQUE
 );
+
+CREATE TABLE sessions (
+                         id INT PRIMARY KEY AUTO_INCREMENT,
+                         token VARCHAR(255),
+                         user_id INT NOT NULL,
+                         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                         FOREIGN KEY (user_id) REFERENCES users(id)
+                            ON DELETE CASCADE
+                            ON UPDATE CASCADE
+
+);
+
+-- CREATE TABLE user_roles (
+--                             user_id UUID NOT NULL,
+--                             role_name VARCHAR(50) NOT NULL,
+--                             PRIMARY KEY (user_id, role_name),
+--                             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+--                             FOREIGN KEY (role_name) REFERENCES roles(name) ON DELETE CASCADE
+-- );
+
+-- ================
+-- COURSES
+-- ================
+
 
 -- ================
 -- SHOPPING CART

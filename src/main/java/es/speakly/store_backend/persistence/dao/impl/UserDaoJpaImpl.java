@@ -1,5 +1,6 @@
 package es.speakly.store_backend.persistence.dao.impl;
 
+import es.speakly.store_backend.persistence.dao.impl.entity.CourseJpaEntity;
 import es.speakly.store_backend.persistence.dao.impl.entity.UserJpaEntity;
 import es.speakly.store_backend.persistence.dao.UserDao;
 import jakarta.persistence.EntityManager;
@@ -21,12 +22,26 @@ public class UserDaoJpaImpl implements UserDao {
 
     @Override
     public Optional<UserJpaEntity> findByUsername(String username) {
-        return Optional.ofNullable(entityManager.find(UserJpaEntity.class, username));
+        String jpql = "SELECT u FROM UserJpaEntity u WHERE u.username = :username";
+        TypedQuery<UserJpaEntity> query = entityManager.createQuery(jpql, UserJpaEntity.class);
+        query.setParameter("username", username);
+        try {
+            return Optional.of(query.getSingleResult());
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<UserJpaEntity> findByEmail(String email) {
-        return Optional.ofNullable(entityManager.find(UserJpaEntity.class, email));
+        String jpql = "SELECT u FROM UserJpaEntity u WHERE u.email = :email";
+        TypedQuery<UserJpaEntity> query = entityManager.createQuery(jpql, UserJpaEntity.class);
+        query.setParameter("email", email);
+        try {
+            return Optional.of(query.getSingleResult());
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -41,6 +56,23 @@ public class UserDaoJpaImpl implements UserDao {
 
     @Override
     public UserJpaEntity insert(UserJpaEntity entity) {
+        // For ManyToMany relationship, we need to fetch existing courses from DB
+        if (entity.getCoursesTaken() != null && !entity.getCoursesTaken().isEmpty()) {
+            List<CourseJpaEntity> managedCourses = entity.getCoursesTaken().stream()
+                    .map(course -> {
+                        if (course.getId() != null) {
+                            // Fetch existing course from database
+                            return entityManager.find(CourseJpaEntity.class, course.getId());
+                        }
+                        return course; // New course
+                    })
+                    .filter(course -> course != null) // Remove nulls (non-existent IDs)
+                    .toList();
+
+            entity.getCoursesTaken().clear();
+            entity.getCoursesTaken().addAll(managedCourses);
+        }
+
         entityManager.persist(entity);
         return entity;
     }

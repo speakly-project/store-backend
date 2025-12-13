@@ -19,8 +19,15 @@ public class UserJpaEntity implements Serializable {
     private String profilePictureUrl;
     private String encryptedPassword;
     private LocalDateTime createdAt;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<CourseJpaEntity> coursesTaken = new ArrayList<>();
+
+    // ManyToMany: A user can TAKE many courses (as student)
+    @ManyToMany
+    @JoinTable(
+        name = "user_courses",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "course_id")
+    )
+    private List<CourseJpaEntity> coursesTaken = new ArrayList<>();
 
     public UserJpaEntity() {}
 
@@ -31,7 +38,9 @@ public class UserJpaEntity implements Serializable {
         this.profilePictureUrl = profilePictureUrl;
         this.encryptedPassword = encryptedPassword;
         this.createdAt = createdAt;
-        setCourses(coursesTaken);
+        if (coursesTaken != null) {
+            this.coursesTaken.addAll(coursesTaken);
+        }
     }
 
     public List<CourseJpaEntity> getCoursesTaken() {
@@ -40,9 +49,8 @@ public class UserJpaEntity implements Serializable {
 
     public void setCourses(List<CourseJpaEntity> coursesTaken) {
         this.coursesTaken.clear();
-        for (CourseJpaEntity courses : coursesTaken) {
-            CourseJpaEntity coursesJpaEntity = new CourseJpaEntity();
-            this.coursesTaken.add(coursesJpaEntity);
+        if (coursesTaken != null) {
+            this.coursesTaken.addAll(coursesTaken);
         }
     }
 

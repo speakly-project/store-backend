@@ -5,8 +5,8 @@ import java.time.LocalDateTime;
 public record UserInsertRequest(
     String username,
     String email,
-    String password,
     String profilePictureUrl,
+    String password,
     LocalDateTime createdAt,
     Long[] coursesTakenIds
 ) {
