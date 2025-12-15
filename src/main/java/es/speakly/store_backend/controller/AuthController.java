@@ -6,7 +6,6 @@ import es.speakly.store_backend.domain.dto.UserDto;
 import es.speakly.store_backend.domain.service.AuthService;
 import es.speakly.store_backend.domain.service.UserService;
 import es.speakly.store_backend.exceptions.DtoValidator;
-import es.speakly.store_backend.persistence.dao.AuthDao;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +16,7 @@ public class AuthController {
     private final AuthService authService;
     private final UserService userService;
 
+
     public AuthController(AuthService authService, UserService userService) {
         this.authService = authService;
         this.userService = userService;
@@ -25,12 +25,22 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
         DtoValidator.validate(loginRequest);
+        UserDto user = userService.getByEmail(loginRequest.email());
 
-        if (userService.getByEmail(loginRequest.email()) == null) {
+        if (user == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        String token = authService.createTokenForUser(userService.getByEmail(loginRequest.email()));
+        UserDto authenticatedUser = new UserDto(
+                user.id(),
+                user.username(),
+                user.email(),
+                user.profilePictureUrl(),
+                loginRequest.password(),
+                user.createdAt(),
+                user.coursesTaken()
+        );
+        String token = authService.createTokenForUser(authenticatedUser);
 
         return new ResponseEntity<>(token, HttpStatus.OK);
     }

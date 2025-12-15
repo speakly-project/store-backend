@@ -1,5 +1,6 @@
 package es.speakly.store_backend.domain.service.impl;
 
+import es.speakly.store_backend.domain.dto.LoginUserDto;
 import es.speakly.store_backend.domain.dto.UserDto;
 import es.speakly.store_backend.domain.model.User;
 import es.speakly.store_backend.domain.repository.AuthRepository;
@@ -22,20 +23,19 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public UserDto getUserFromToken(String token) {
-        return authRepository.findByToken(token).map(UserMapper::fromUserDtoToUser).map(UserMapper::fromUserToUserDto).orElse(null);
+    public LoginUserDto getUserFromToken(String token) {
+        return authRepository.findByToken(token).orElseThrow(() -> new ResourceNotFoundException("Invalid token"));
     }
 
     @Override
     @Transactional
     public String createTokenForUser(UserDto user) {
-        UserDto newUser = userRepository.findByEmail(user.email())
-                .map(UserMapper::fromUserDtoToUser).map(UserMapper::fromUserToUserDto).orElseThrow(() -> new ResourceNotFoundException("User with email " + user.email() + " not found"));
-        boolean isValid = BCrypt.checkpw(user.password(), newUser.password());
-        if (!isValid) {
+        UserDto userDb = userRepository.findByEmail(user.email()).orElseThrow(() -> new ResourceNotFoundException("User with email " + user.email() + " not found"));
+
+        if (!BCrypt.checkpw(user.password(), userDb.password())) {
             throw new BusinessException("Invalid password");
         }
-        return authRepository.createTokenForUser(newUser.id()).toString();
+        return authRepository.createTokenForUser(userDb.id()).toString();
     }
 
     @Override

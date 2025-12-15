@@ -2,15 +2,18 @@ package es.speakly.store_backend.controller;
 
 import es.speakly.store_backend.controller.webmodel.request.LevelInsertRequest;
 import es.speakly.store_backend.domain.dto.LevelDto;
+import es.speakly.store_backend.domain.dto.LoginUserDto;
+import es.speakly.store_backend.domain.dto.UserDto;
 import es.speakly.store_backend.domain.model.Page;
 import es.speakly.store_backend.domain.service.LevelService;
 import es.speakly.store_backend.exceptions.DtoValidator;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/speakly/levels")
+@RequestMapping("api/speakly/admin/levels")
 public class LevelController {
     private final LevelService levelService;
 
@@ -31,6 +34,22 @@ public class LevelController {
         LevelDto levelDto = levelService.getById(id);
         return new ResponseEntity<>(levelDto, HttpStatus.OK);
     }
+//@GetMapping("/{id}")
+//public ResponseEntity<LevelDto> findLevelById(
+//        @PathVariable Long id,
+//        HttpServletRequest request
+//) {
+//    LoginUserDto user = (LoginUserDto) request.getAttribute("user");
+//    Long userId = user.id();
+//
+//    if (userId == null) {
+//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+//    }
+//
+//    LevelDto levelDto = levelService.getById(id);
+//    return new ResponseEntity<>(levelDto, HttpStatus.OK);
+//}
+
 
     @GetMapping("/amount")
     public ResponseEntity<Long> getLevelsAmount() {

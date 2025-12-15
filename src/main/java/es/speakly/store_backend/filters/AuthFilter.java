@@ -1,9 +1,8 @@
 package es.speakly.store_backend.filters;
 
+import es.speakly.store_backend.domain.dto.LoginUserDto;
 import es.speakly.store_backend.domain.dto.UserDto;
-import es.speakly.store_backend.domain.model.User;
-import es.speakly.store_backend.persistence.dao.AuthDao;
-import es.speakly.store_backend.persistence.dao.impl.entity.UserJpaEntity;
+import es.speakly.store_backend.domain.service.AuthService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,35 +10,47 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Optional;
 
 public class AuthFilter extends OncePerRequestFilter {
-    private final AuthDao authDao;
 
-    public AuthFilter(AuthDao authDao) {
-        this.authDao = authDao;
+    private final AuthService authService;
+
+    public AuthFilter(AuthService authService) {
+        this.authService = authService;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
-        throws ServletException, IOException {
-        String token = request.getHeader("Authorization");
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
+
+        String token = obtenerToken(request);
 
         if (token != null) {
-            Optional<UserJpaEntity> user = authDao.findByToken(token);
+            LoginUserDto user = authService.getUserFromToken(token);
 
-//            if (user != null){
-//                UsernamePasswordAuthenticationToken authentication =
-//                    new UsernamePasswordAuthenticationToken(
-//                            user,
-//                            null,
-//                            null
-//                    );
-//                SecurityContextHolder.getContext().setAuthentication(authentication);
-//            }
+            if (user == null) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Token invalido");
+                return;
+            }
+
+            request.setAttribute("user", user);
         }
         filterChain.doFilter(request, response);
     }
+
+    private String obtenerToken(HttpServletRequest request) {
+        // 1️⃣ Header Authorization
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7);
+        }
+
+        // 2️⃣ Query param ?token=
+        return request.getParameter("token");
+    }
 }
+

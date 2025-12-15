@@ -40,17 +40,16 @@ import org.springframework.context.annotation.Configuration;
 public class SpringConfig {
 
 
-    @Bean
-    public AuthFilter authFilter(AuthDao authDao) {
-        return new AuthFilter(authDao);
-    }
+//    @Bean
+//    public AuthFilter authFilter(AuthService authService) {
+//        return new AuthFilter(authService);
+//    }
 
     @Bean
-    public FilterRegistrationBean<AuthFilter> authFilterRegistration(AuthFilter authFilter) {
+    public FilterRegistrationBean<AuthFilter> authFilter(AuthService authService) {
         FilterRegistrationBean<AuthFilter> registration = new FilterRegistrationBean<>();
-        registration.setFilter(authFilter);
-        registration.addUrlPatterns("/*");
-        registration.setOrder(1);
+        registration.setFilter(new AuthFilter(authService));
+        registration.addUrlPatterns("/api/speakly/admin/*");
         return registration;
     }
 

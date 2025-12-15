@@ -20,7 +20,6 @@ public class UserJpaEntity implements Serializable {
     private String encryptedPassword;
     private LocalDateTime createdAt;
 
-    // ManyToMany: A user can TAKE many courses (as student)
     @ManyToMany
     @JoinTable(
         name = "user_courses",
@@ -54,7 +53,6 @@ public class UserJpaEntity implements Serializable {
         }
     }
 
-    // Getters and setters for other fields
     public Long getId() {
         return id;
     }

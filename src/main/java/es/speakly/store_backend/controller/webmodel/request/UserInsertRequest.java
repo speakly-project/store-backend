@@ -1,5 +1,6 @@
 package es.speakly.store_backend.controller.webmodel.request;
 
+
 import java.time.LocalDateTime;
 
 public record UserInsertRequest(
@@ -10,5 +11,11 @@ public record UserInsertRequest(
     LocalDateTime createdAt,
     Long[] coursesTakenIds
 ) {
+    public UserInsertRequest {
+        createdAt = createdAt != null
+                ? createdAt
+                : LocalDateTime.now();
+    }
+
 
 }

@@ -1,5 +1,6 @@
 package es.speakly.store_backend.persistence.dao.impl;
 
+import es.speakly.store_backend.domain.dto.LoginUserDto;
 import es.speakly.store_backend.domain.dto.UserDto;
 import es.speakly.store_backend.exceptions.ResourceNotFoundException;
 import es.speakly.store_backend.persistence.dao.AuthDao;
@@ -18,10 +19,10 @@ public class AuthJpaDaoImpl implements AuthDao {
 
 
     @Override
-    public Optional<UserJpaEntity> findByToken(String token) {
+    public Optional<LoginUserDto> findByToken(String token) {
         try {
-            String sql = "SELECT s FROM SessionJpaEntity s WHERE s.token = :token";
-            UserJpaEntity user = entityManager.createQuery(sql, UserJpaEntity.class)
+            String sql = "SELECT new es.speakly.store_backend.domain.dto.LoginUserDto(u.id, u.email) FROM SessionJpaEntity s JOIN s.user u WHERE s.token = :token";
+            LoginUserDto user = entityManager.createQuery(sql, LoginUserDto.class)
                     .setParameter("token", token)
                     .getSingleResult();
             return Optional.ofNullable(user);
@@ -50,8 +51,6 @@ public class AuthJpaDaoImpl implements AuthDao {
         entityManager.createQuery(sql)
                 .setParameter("token", token)
                 .executeUpdate();
-
-
     }
 
     @Override

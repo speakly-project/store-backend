@@ -18,15 +18,15 @@ public class SessionJpaEntity implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserJpaEntity user;
-
-    private LocalDateTime created;
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createAt;
 
     public SessionJpaEntity() {}
 
     public SessionJpaEntity(String token, UserJpaEntity user, LocalDateTime createAt) {
         this.user = user;
         this.token = token;
-        this.created = createAt;
+        this.createAt = createAt;
     }
 
     public Long getId() {
@@ -54,11 +54,11 @@ public class SessionJpaEntity implements Serializable {
     }
 
     public LocalDateTime getCreatedAt() {
-        return created;
+        return createAt;
     }
 
     public void setCreatedAt(LocalDateTime created) {
-        this.created = created;
+        this.createAt = created;
     }
 
 

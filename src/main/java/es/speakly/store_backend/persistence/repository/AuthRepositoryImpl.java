@@ -1,5 +1,6 @@
 package es.speakly.store_backend.persistence.repository;
 
+import es.speakly.store_backend.domain.dto.LoginUserDto;
 import es.speakly.store_backend.domain.dto.UserDto;
 import es.speakly.store_backend.domain.repository.AuthRepository;
 import es.speakly.store_backend.mappers.UserMapper;
@@ -16,8 +17,8 @@ public class AuthRepositoryImpl implements AuthRepository {
     }
 
     @Override
-    public Optional<UserDto> findByToken(String token) {
-        return authDao.findByToken(token).map(UserMapper::fromUserEntityToUserDto);
+    public Optional<LoginUserDto> findByToken(String token) {
+        return authDao.findByToken(token);
     }
 
     @Override

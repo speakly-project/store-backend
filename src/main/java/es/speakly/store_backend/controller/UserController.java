@@ -64,18 +64,6 @@ public class UserController {
     @PostMapping
     public ResponseEntity<UserDetailResponse> createUser(@RequestBody UserInsertRequest userInsertRequest) {
         UserDto userDto = UserMapper.fromUserInsertRequestToUserDto(userInsertRequest);
-//        LocalDateTime createdAt = userInsertRequest.createdAt() != null
-//                ? userInsertRequest.createdAt()
-//                : LocalDateTime.now();
-//        UserDto userDtoWithCreatedAt = new UserDto(
-//                null,
-//                userDto.username(),
-//                userDto.email(),
-//                userDto.profilePictureUrl(),
-//                userDto.password(),
-//                createdAt,
-//                userDto.coursesTaken()
-//        );
         DtoValidator.validate(userDto);
         UserDto createdUserDto = userService.createUser(userDto);
         UserDetailResponse userDetailResponse = UserMapper.fromUserDtoToUserDetailResponse(createdUserDto);
