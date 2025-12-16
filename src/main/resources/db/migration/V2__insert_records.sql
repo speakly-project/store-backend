@@ -7,39 +7,40 @@
 -- USERS
 -- ================
 
-INSERT INTO users (username, email, profile_picture_url, encrypted_password, created_at) VALUES
-                                                                                             ('teacher_john', 'john@example.com', 'https://example.com/john.png', 'encrypted_pass_123', '2020-05-20'),
-                                                                                             ('teacher_maria', 'maria@example.com', 'https://example.com/maria.png', 'encrypted_pass_456', '2020-07-30'),
-                                                                                             ('student_anna', 'anna@example.com', NULL, 'encrypted_pass_789', '2021-07-29'),
-                                                                                             ('student_pedro', 'pedro@example.com', NULL, 'encrypted_pass_987', '2021-08-29'),
-                                                                                             ('teacher_lucas', 'lucas@example.com', NULL, 'pass_001', '2022-01-10'),
-                                                                                             ('teacher_sara', 'sara@example.com', NULL, 'pass_002', '2022-01-15'),
-                                                                                             ('teacher_claire', 'claire@example.com', NULL, 'pass_003', '2022-01-20'),
-                                                                                             ('teacher_michael', 'michael@example.com', NULL, 'pass_004', '2022-02-01'),
-                                                                                             ('teacher_julia', 'julia@example.com', NULL, 'pass_005', '2022-02-03'),
-                                                                                             ('teacher_richard', 'richard@example.com', NULL, 'pass_006', '2022-02-05'),
+INSERT INTO users (username, email, profile_picture_url, encrypted_password, created_at, role) VALUES
+                                                                                             ('teacher_john', 'john@example.com', 'https://example.com/john.png', 'encrypted_pass_123', '2020-05-20', 'ADMIN'),
+                                                                                             ('teacher_maria', 'maria@example.com', 'https://example.com/maria.png', 'encrypted_pass_456', '2020-07-30', 'ADMIN'),
+                                                                                             ('student_anna', 'anna@example.com', NULL, 'encrypted_pass_789', '2021-07-29', 'USER'),
+                                                                                             ('student_pedro', 'pedro@example.com', NULL, 'encrypted_pass_987', '2021-08-29','USER'),
+                                                                                             ('teacher_lucas', 'lucas@example.com', NULL, 'pass_001', '2022-01-10', 'ADMIN'),
+                                                                                             ('teacher_sara', 'sara@example.com', NULL, 'pass_002', '2022-01-15', 'ADMIN'),
+                                                                                             ('teacher_claire', 'claire@example.com', NULL, 'pass_003', '2022-01-20', 'ADMIN'),
+                                                                                             ('teacher_michael', 'michael@example.com', NULL, 'pass_004', '2022-02-01', 'ADMIN'),
+                                                                                             ('teacher_julia', 'julia@example.com', NULL, 'pass_005', '2022-02-03', 'ADMIN'),
+                                                                                             ('teacher_richard', 'richard@example.com', NULL, 'pass_006', '2022-02-05', 'ADMIN'),
 
-                                                                                             ('student_luis', 'luis@example.com', NULL, 'pass_007', '2022-02-10'),
-                                                                                             ('student_marta', 'marta@example.com', NULL, 'pass_008', '2022-02-12'),
-                                                                                             ('student_nora', 'nora@example.com', NULL, 'pass_009', '2022-02-15'),
-                                                                                             ('student_carla', 'carla@example.com', NULL, 'pass_010', '2022-02-17'),
-                                                                                             ('student_tomas', 'tomas@example.com', NULL, 'pass_011', '2022-03-01'),
-                                                                                             ('student_javier', 'javier@example.com', NULL, 'pass_012', '2022-03-02'),
-                                                                                             ('student_sonia', 'sonia@example.com', NULL, 'pass_013', '2022-03-05'),
-                                                                                             ('student_andres', 'andres@example.com', NULL, 'pass_014', '2022-03-08'),
-                                                                                             ('student_claudia', 'claudia@example.com', NULL, 'pass_015', '2022-03-09'),
-                                                                                             ('student_raul', 'raul@example.com', NULL, 'pass_016', '2022-03-11'),
 
-                                                                                             ('teacher_elena', 'elena@example.com', NULL, 'pass_017', '2022-03-20'),
-                                                                                             ('teacher_adrian', 'adrian@example.com', NULL, 'pass_018', '2022-03-25'),
-                                                                                             ('teacher_brian', 'brian@example.com', NULL, 'pass_019', '2022-03-28'),
-                                                                                             ('teacher_roberta', 'roberta@example.com', NULL, 'pass_020', '2022-04-05'),
-                                                                                             ('teacher_omar', 'omar@example.com', NULL, 'pass_021', '2022-04-09'),
-                                                                                             ('teacher_ines', 'ines@example.com', NULL, 'pass_022', '2022-04-11'),
-                                                                                             ('teacher_paula', 'paula@example.com', NULL, 'pass_023', '2022-04-15'),
-                                                                                             ('teacher_felipe', 'felipe@example.com', NULL, 'pass_024', '2022-04-18'),
-                                                                                             ('teacher_david', 'david@example.com', NULL, 'pass_025', '2022-04-20'),
-                                                                                             ('teacher_lola', 'lola@example.com', NULL, 'pass_026', '2022-04-25');
+                                                                                             ('student_luis', 'luis@example.com', NULL, 'pass_007', '2022-02-10', 'USER'),
+                                                                                             ('student_marta', 'marta@example.com', NULL, 'pass_008', '2022-02-12', 'USER'),
+                                                                                             ('student_nora', 'nora@example.com', NULL, 'pass_009', '2022-02-15', 'USER'),
+                                                                                             ('student_carla', 'carla@example.com', NULL, 'pass_010', '2022-02-17', 'USER'),
+                                                                                             ('student_tomas', 'tomas@example.com', NULL, 'pass_011', '2022-03-01', 'USER'),
+                                                                                             ('student_javier', 'javier@example.com', NULL, 'pass_012', '2022-03-02', 'USER'),
+                                                                                             ('student_sonia', 'sonia@example.com', NULL, 'pass_013', '2022-03-05', 'USER'),
+                                                                                             ('student_andres', 'andres@example.com', NULL, 'pass_014', '2022-03-08', 'USER'),
+                                                                                             ('student_claudia', 'claudia@example.com', NULL, 'pass_015', '2022-03-09', 'USER'),
+                                                                                             ('student_raul', 'raul@example.com', NULL, 'pass_016', '2022-03-11', 'USER'),
+
+                                                                                             ('teacher_elena', 'elena@example.com', NULL, 'pass_017', '2022-03-20', 'ADMIN'),
+                                                                                             ('teacher_adrian', 'adrian@example.com', NULL, 'pass_018', '2022-03-25', 'ADMIN'),
+                                                                                             ('teacher_brian', 'brian@example.com', NULL, 'pass_019', '2022-03-28', 'ADMIN'),
+                                                                                             ('teacher_roberta', 'roberta@example.com', NULL, 'pass_020', '2022-04-05', 'ADMIN'),
+                                                                                             ('teacher_omar', 'omar@example.com', NULL, 'pass_021', '2022-04-09', 'ADMIN'),
+                                                                                             ('teacher_ines', 'ines@example.com', NULL, 'pass_022', '2022-04-11', 'ADMIN'),
+                                                                                             ('teacher_paula', 'paula@example.com', NULL, 'pass_023', '2022-04-15', 'ADMIN'),
+                                                                                             ('teacher_felipe', 'felipe@example.com', NULL, 'pass_024', '2022-04-18', 'ADMIN'),
+                                                                                             ('teacher_david', 'david@example.com', NULL, 'pass_025', '2022-04-20', 'ADMIN'),
+                                                                                             ('teacher_lola', 'lola@example.com', NULL, 'pass_026', '2022-04-25', 'ADMIN');
 
 
 -- ================

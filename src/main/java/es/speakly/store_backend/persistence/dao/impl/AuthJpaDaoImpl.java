@@ -21,7 +21,7 @@ public class AuthJpaDaoImpl implements AuthDao {
     @Override
     public Optional<LoginUserDto> findByToken(String token) {
         try {
-            String sql = "SELECT new es.speakly.store_backend.domain.dto.LoginUserDto(u.id, u.email) FROM SessionJpaEntity s JOIN s.user u WHERE s.token = :token";
+            String sql = "SELECT new es.speakly.store_backend.domain.dto.LoginUserDto(u.id, u.email, u.role) FROM SessionJpaEntity s JOIN s.user u WHERE s.token = :token";
             LoginUserDto user = entityManager.createQuery(sql, LoginUserDto.class)
                     .setParameter("token", token)
                     .getSingleResult();

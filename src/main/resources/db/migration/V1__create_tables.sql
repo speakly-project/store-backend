@@ -13,7 +13,7 @@ CREATE TABLE users (
     email VARCHAR(255) NOT NULL UNIQUE,
     profile_picture_url VARCHAR(512),
     encrypted_password VARCHAR(255) NOT NULL,
-    created_at DATE,
+    created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     role ENUM('ADMIN', 'USER') NOT NULL DEFAULT 'USER'
 );
 

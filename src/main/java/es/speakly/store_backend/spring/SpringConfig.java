@@ -39,12 +39,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SpringConfig {
 
-
-//    @Bean
-//    public AuthFilter authFilter(AuthService authService) {
-//        return new AuthFilter(authService);
-//    }
-
     @Bean
     public FilterRegistrationBean<AuthFilter> authFilter(AuthService authService) {
         FilterRegistrationBean<AuthFilter> registration = new FilterRegistrationBean<>();
