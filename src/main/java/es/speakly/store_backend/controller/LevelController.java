@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/speakly/admin/levels")
+@RequestMapping("api/speakly/levels")
 public class LevelController {
     private final LevelService levelService;
 

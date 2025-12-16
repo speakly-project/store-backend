@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,12 +28,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static es.speakly.store_backend.domain.model.UserRole.USER;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
+import es.speakly.store_backend.domain.model.UserRole;
 @WebMvcTest(UserController.class)
-@Import(UserControllerTest.TestConfig.class)
 public class UserControllerTest {
 
     @Autowired
@@ -41,18 +42,8 @@ public class UserControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
+    @MockitoBean
     private UserService userService;
-
-
-    @TestConfiguration
-    static class TestConfig {
-
-        @Bean
-        UserService userService() {
-            return mock(UserService.class);
-        }
-    }
 
     @BeforeEach
     void resetMocks() {
@@ -63,8 +54,8 @@ public class UserControllerTest {
     @Test
     void findAllUsers() throws Exception {
         List<UserDto> users = List.of(
-                new UserDto(1L, "user1", "user1@gmail.com", null, "hashedpassword1", null, null),
-                new UserDto(2L, "user2", "user2@gmail.com", null, "hashedpassword2", null, null)
+                new UserDto(1L, "user1", "user1@gmail.com", null, "hashedpassword1", null, null, USER),
+                new UserDto(2L, "user2", "user2@gmail.com", null, "hashedpassword2", null, null, USER)
         );
 
         Page<UserDto> userPage = new Page<>(users, 1, 2, users.size());
@@ -88,8 +79,8 @@ public class UserControllerTest {
     @Test
     void findAllUsersWithDefaultPagination() throws Exception {
         List<UserDto> users = List.of(
-                new UserDto(1L, "user1", "user1@gmail.com", null, "hashedpassword1", null, null),
-                new UserDto(2L, "user2", "user2@gmail.com", null, "hashedpassword2", null, null)
+                new UserDto(1L, "user1", "user1@gmail.com", null, "hashedpassword1", null, null, USER),
+                new UserDto(2L, "user2", "user2@gmail.com", null, "hashedpassword2", null, null, USER)
         );
 
         Page<UserDto> userPage = new Page<>(users, 1, 10, users.size());
@@ -117,7 +108,8 @@ public class UserControllerTest {
                 null,
                 "hashedpassword",
                 LocalDateTime.now(),
-                null
+                null,
+                USER
         );
 
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
@@ -144,7 +136,8 @@ public class UserControllerTest {
                 "secret123",
                 "https://example.com/avatar.png",
                 null,
-                null
+                null,
+                USER
         );
 
         objectMapper.registerModule(new JavaTimeModule());
@@ -157,7 +150,8 @@ public class UserControllerTest {
                 "https://example.com/avatar.png",
                 "secret123",
                 LocalDateTime.now(),
-                null
+                null,
+                USER
         );
 
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
@@ -190,7 +184,8 @@ public class UserControllerTest {
                 "http://example.com/pic.png",
                 "password456",
                 null,
-                List.of(1L, 2L, 3L).toArray(Long[]::new)
+                List.of(1L, 2L, 3L).toArray(Long[]::new),
+                USER
         );
 
         objectMapper.registerModule(new JavaTimeModule());
@@ -205,7 +200,8 @@ public class UserControllerTest {
                 LocalDateTime.now(),
                 Stream.of(1L, 2L, 3L)
                         .map(id -> new es.speakly.store_backend.domain.dto.CourseDto(id, "Course " + id, null, null, null,null,null))
-                        .toList()
+                        .toList(),
+                USER
         );
 
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;

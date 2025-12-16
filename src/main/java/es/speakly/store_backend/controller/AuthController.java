@@ -38,7 +38,8 @@ public class AuthController {
                 user.profilePictureUrl(),
                 loginRequest.password(),
                 user.createdAt(),
-                user.coursesTaken()
+                user.coursesTaken(),
+                user.role()
         );
         String token = authService.createTokenForUser(authenticatedUser);
 

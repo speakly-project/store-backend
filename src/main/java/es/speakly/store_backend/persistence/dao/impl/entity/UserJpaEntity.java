@@ -1,5 +1,6 @@
 package es.speakly.store_backend.persistence.dao.impl.entity;
 
+import es.speakly.store_backend.domain.model.UserRole;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -19,7 +20,7 @@ public class UserJpaEntity implements Serializable {
     private String profilePictureUrl;
     private String encryptedPassword;
     private LocalDateTime createdAt;
-
+    private UserRole role;
     @ManyToMany
     @JoinTable(
         name = "user_courses",
@@ -30,7 +31,7 @@ public class UserJpaEntity implements Serializable {
 
     public UserJpaEntity() {}
 
-    public UserJpaEntity(Long id, String username, String email, String profilePictureUrl, String encryptedPassword, LocalDateTime createdAt, List<CourseJpaEntity> coursesTaken) {
+    public UserJpaEntity(Long id, String username, String email, String profilePictureUrl, String encryptedPassword, LocalDateTime createdAt, List<CourseJpaEntity> coursesTaken, UserRole role) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -40,6 +41,7 @@ public class UserJpaEntity implements Serializable {
         if (coursesTaken != null) {
             this.coursesTaken.addAll(coursesTaken);
         }
+        this.role = role;
     }
 
     public List<CourseJpaEntity> getCoursesTaken() {
@@ -88,5 +90,13 @@ public class UserJpaEntity implements Serializable {
     }
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public UserRole getRole() {
+        return role;
+    }
+
+    public void setRole(UserRole role) {
+        this.role = role;
     }
 }

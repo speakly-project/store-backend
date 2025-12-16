@@ -1,6 +1,8 @@
 package es.speakly.store_backend.controller.webmodel.request;
 
 
+import es.speakly.store_backend.domain.model.UserRole;
+
 import java.time.LocalDateTime;
 
 public record UserInsertRequest(
@@ -9,7 +11,8 @@ public record UserInsertRequest(
     String profilePictureUrl,
     String password,
     LocalDateTime createdAt,
-    Long[] coursesTakenIds
+    Long[] coursesTakenIds,
+    UserRole role
 ) {
     public UserInsertRequest {
         createdAt = createdAt != null

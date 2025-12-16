@@ -15,7 +15,10 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+
+import static es.speakly.store_backend.domain.model.UserRole.USER;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -23,34 +26,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @WebMvcTest(AuthController.class)
-@Import(AuthControllerTest.TestConfig.class)
 class AuthControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private AuthService authService;
-
-    @Autowired
-    private UserService userService;
-
     @Autowired
     private ObjectMapper objectMapper;
+    @MockitoBean
+    private AuthService authService;
 
-    @TestConfiguration
-    static class TestConfig {
-
-        @Bean
-        AuthService authService() {
-            return mock(AuthService.class);
-        }
-
-        @Bean
-        UserService userService() {
-            return mock(UserService.class);
-        }
-    }
+    @MockitoBean
+    private UserService userService;
 
     @BeforeEach
     void resetMocks() {
@@ -67,7 +53,8 @@ class AuthControllerTest {
                 null,
                 "password",
                 null,
-                null
+                null,
+                USER
         );
 
         when(userService.getByEmail("test@email.com")).thenReturn(user);

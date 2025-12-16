@@ -14,8 +14,9 @@ public class User {
     private String encryptedPassword;
     private LocalDateTime createdAt;
     private List<Course> coursesTaken;
+    private UserRole role;
 
-    public User(Long id, String username, String email, String profilePictureUrl, String encryptedPassword, LocalDateTime createdAt, List<Course> coursesTaken) {
+    public User(Long id, String username, String email, String profilePictureUrl, String encryptedPassword, LocalDateTime createdAt, List<Course> coursesTaken, UserRole role) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -23,6 +24,7 @@ public class User {
         this.encryptedPassword = encryptedPassword;
         this.createdAt = createdAt;
         this.coursesTaken = coursesTaken;
+        this.role = role;
     }
 
 
@@ -80,5 +82,13 @@ public class User {
 
     public void setCoursesTaken(List<Course> coursesTaken) {
         this.coursesTaken = coursesTaken;
+    }
+
+    public UserRole getRole() {
+        return role;
+    }
+
+    public void setRole(UserRole role) {
+        this.role = role;
     }
 }

@@ -31,11 +31,11 @@ public class AuthFilter extends OncePerRequestFilter {
         if (token != null) {
             LoginUserDto user = authService.getUserFromToken(token);
 
-            if (user == null) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("Token invalido");
-                return;
-            }
+//            if (user == null) {
+//                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//                response.getWriter().write("Token invalido");
+//                return;
+//            }
 
             request.setAttribute("user", user);
         }

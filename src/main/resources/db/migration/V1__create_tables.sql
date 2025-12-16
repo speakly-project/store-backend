@@ -7,17 +7,14 @@
 -- USERS & ROLES
 -- ================
 
--- CREATE TABLE role (
---                        name VARCHAR(50) PRIMARY KEY
--- );
-
 CREATE TABLE users (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
     profile_picture_url VARCHAR(512),
     encrypted_password VARCHAR(255) NOT NULL,
-    created_at DATE
+    created_at DATE,
+    role ENUM('ADMIN', 'USER') NOT NULL DEFAULT 'USER'
 );
 
 CREATE TABLE courses (

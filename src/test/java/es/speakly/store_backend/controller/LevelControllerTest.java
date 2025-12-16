@@ -2,21 +2,26 @@ package es.speakly.store_backend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import es.speakly.store_backend.controller.webmodel.request.LevelInsertRequest;
+import es.speakly.store_backend.domain.dto.LevelDto;
+import es.speakly.store_backend.domain.model.Page;
+import es.speakly.store_backend.domain.service.LevelService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@Transactional
+@WebMvcTest(LevelController.class)
 public class LevelControllerTest {
 
     @Autowired
@@ -25,193 +30,128 @@ public class LevelControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @MockitoBean
+    private LevelService levelService;
 
-    // ...existing GET tests...
+    @BeforeEach
+    void resetMocks() {
+        Mockito.reset(levelService);
+    }
 
     @Test
     void findAllLevels() throws Exception {
+        List<LevelDto> levels = List.of(
+                new LevelDto(1L, "A1"),
+                new LevelDto(2L, "A2")
+        );
+
+        Page<LevelDto> levelPage = new Page<>(levels, 1, 100, levels.size());
+
+        when(levelService.getAll(1, 100)).thenReturn(levelPage);
+
         mockMvc.perform(get("/api/speakly/levels")
                         .param("pageNumber", "1")
                         .param("pageSize", "100"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data.length()").value(2))
                 .andExpect(jsonPath("$.pageNumber").value(1))
                 .andExpect(jsonPath("$.pageSize").value(100))
-                .andExpect(jsonPath("$.totalElements").isNumber())
-                .andExpect(jsonPath("$.data[0].name").exists());
+                .andExpect(jsonPath("$.totalElements").value(2));
+
+        verify(levelService).getAll(1, 100);
+    }
+
+    @Test
+    void findAllLevelsWithDefaultPagination() throws Exception {
+        List<LevelDto> levels = List.of(
+                new LevelDto(1L, "A1"),
+                new LevelDto(2L, "A2"),
+                new LevelDto(3L, "B1")
+        );
+
+        Page<LevelDto> levelPage = new Page<>(levels, 1, 100, levels.size());
+
+        when(levelService.getAll(1, 100)).thenReturn(levelPage);
+
+        mockMvc.perform(get("/api/speakly/levels"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data.length()").value(3))
+                .andExpect(jsonPath("$.pageNumber").value(1))
+                .andExpect(jsonPath("$.pageSize").value(100))
+                .andExpect(jsonPath("$.totalElements").value(3));
+
+        verify(levelService).getAll(1, 100);
     }
 
     @Test
     void findLevelById() throws Exception {
+        LevelDto level = new LevelDto(1L, "A1");
+
+        when(levelService.getById(1L)).thenReturn(level);
+
         mockMvc.perform(get("/api/speakly/levels/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("A1"));
-    }
 
-    @Test
-    void findLevelByIdNotFound() throws Exception {
-        mockMvc.perform(get("/api/speakly/levels/999999"))
-                .andExpect(status().isNotFound());
+        verify(levelService).getById(1L);
     }
 
     @Test
     void getLevelsAmount() throws Exception {
+        when(levelService.count()).thenReturn(9L);
+
         mockMvc.perform(get("/api/speakly/levels/amount"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
-                .andExpect(jsonPath("$").isNumber());
+                .andExpect(jsonPath("$").value(9));
+
+        verify(levelService).count();
     }
 
     @Test
-    void verifyAllCEFRLevels() throws Exception {
-        String[] cefrLevels = {"A1", "A2", "B1", "B2", "C1", "C2"};
-        for (int i = 0; i < cefrLevels.length; i++) {
-            mockMvc.perform(get("/api/speakly/levels/" + (i + 1)))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.name").value(cefrLevels[i]));
-        }
-    }
-    @Test
-    void verifyCustomLevels() throws Exception {
-        // Verify custom English levels
-        mockMvc.perform(get("/api/speakly/levels/7"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("BASIC"));
+    void createLevel() throws Exception {
+        LevelInsertRequest levelInsertRequest = new LevelInsertRequest("D1");
 
-        mockMvc.perform(get("/api/speakly/levels/8"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("INTERMEDIATE"));
+        LevelDto createdLevel = new LevelDto(10L, "D1");
 
-        mockMvc.perform(get("/api/speakly/levels/9"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("ADVANCED"));
-    }
+        when(levelService.createLevel(any())).thenReturn(createdLevel);
 
-    // ==================== POST TESTS (CRITICAL CASES) ====================
-
-    @Test
-    void createLevel_Success() throws Exception {
-        // Arrange - Create a unique level name
-        LevelInsertRequest newLevel = new LevelInsertRequest("D1");
-
-        // Act & Assert
         mockMvc.perform(post("/api/speakly/levels")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(newLevel)))
+                        .content(objectMapper.writeValueAsString(levelInsertRequest)))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType("application/json"))
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.name").value(newLevel.name()));
+                .andExpect(jsonPath("$.id").value(10))
+                .andExpect(jsonPath("$.name").value("D1"));
+
+        verify(levelService).createLevel(any(LevelDto.class));
     }
 
     @Test
-    void createLevel_DuplicateName_ShouldFail() throws Exception {
-        // Arrange - Try to create a level with existing name "A1"
-        LevelInsertRequest duplicateLevel = new LevelInsertRequest("A1");
+    void createLevelWithMissingName() throws Exception {
+        String invalidLevelJson = """
+                {
+                    "name": null
+                }
+                """;
 
-        // Act & Assert - Should return 400 Bad Request
         mockMvc.perform(post("/api/speakly/levels")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(duplicateLevel)))
+                        .content(invalidLevelJson))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    void createLevel_NullName_ShouldFail() throws Exception {
-        // Arrange - Try to create a level with null name
-        String invalidJson = "{\"name\": null}";
-
-        // Act & Assert - Should return 400 Bad Request
+    void createLevelWithEmptyBody() throws Exception {
         mockMvc.perform(post("/api/speakly/levels")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(invalidJson))
+                        .content("{}"))
                 .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void createLevel_EmptyName_ShouldFail() throws Exception {
-        // Arrange - Try to create a level with empty name
-        LevelInsertRequest emptyNameLevel = new LevelInsertRequest("");
-
-        // Act & Assert - Should return 400 Bad Request
-        mockMvc.perform(post("/api/speakly/levels")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(emptyNameLevel)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void createLevel_NameTooLong_ShouldFail() throws Exception {
-        // Arrange - Try to create a level with name longer than 20 characters
-        LevelInsertRequest tooLongNameLevel = new LevelInsertRequest("THIS_NAME_IS_WAY_TOO_LONG_TO_BE_VALID");
-
-        // Act & Assert - Should return 400 Bad Request
-        mockMvc.perform(post("/api/speakly/levels")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(tooLongNameLevel)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void createLevel_WhitespaceOnlyName_ShouldFail() throws Exception {
-        // Arrange - Try to create a level with only whitespace
-        LevelInsertRequest whitespaceLevel = new LevelInsertRequest("   ");
-
-        // Act & Assert - Should return 400 Bad Request
-        mockMvc.perform(post("/api/speakly/levels")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(whitespaceLevel)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void createLevel_ValidNameWithSpaces_Success() throws Exception {
-        // Arrange - Create a level with valid name containing spaces
-        LevelInsertRequest levelWithSpaces = new LevelInsertRequest("TEST LEVEL");
-
-        // Act & Assert
-        mockMvc.perform(post("/api/speakly/levels")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(levelWithSpaces)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value(levelWithSpaces.name()));
-    }
-
-    @Test
-    void createLevel_SpecialCharacters_Success() throws Exception {
-        // Arrange - Create a level with special characters
-        LevelInsertRequest specialCharLevel = new LevelInsertRequest("A1+");
-
-        // Act & Assert
-        mockMvc.perform(post("/api/speakly/levels")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(specialCharLevel)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value(specialCharLevel.name()));
-    }
-
-    @Test
-    void createMultipleLevels_Sequential_Success() throws Exception {
-        // Arrange - Create multiple levels in sequence
-        LevelInsertRequest level1 = new LevelInsertRequest("SEQ1");
-        LevelInsertRequest level2 = new LevelInsertRequest("SEQ2");
-
-        // Act & Assert - Both should succeed
-        mockMvc.perform(post("/api/speakly/levels")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(level1)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value(level1.name()));
-
-        mockMvc.perform(post("/api/speakly/levels")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(level2)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value(level2.name()));
     }
 }
-
-

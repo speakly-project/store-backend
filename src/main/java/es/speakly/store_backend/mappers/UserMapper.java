@@ -7,6 +7,7 @@ import es.speakly.store_backend.controller.webmodel.response.UserSummaryResponse
 import es.speakly.store_backend.domain.dto.CourseDto;
 import es.speakly.store_backend.domain.dto.UserDto;
 import es.speakly.store_backend.domain.model.User;
+import es.speakly.store_backend.domain.model.UserRole;
 import es.speakly.store_backend.persistence.dao.impl.entity.CourseJpaEntity;
 import es.speakly.store_backend.persistence.dao.impl.entity.UserJpaEntity;
 
@@ -14,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static es.speakly.store_backend.domain.model.UserRole.USER;
 
 public class UserMapper {
     private static UserMapper INSTANCE;
@@ -55,7 +58,8 @@ public class UserMapper {
             userDto.coursesTaken() != null ?
                     userDto.coursesTaken().stream()
                             .map(CourseMapper::fromCourseDtoToCourseSummaryResponse).toList()
-                    : Collections.emptyList()
+                    : Collections.emptyList(),
+            userDto.role()
         );
     }
 
@@ -73,7 +77,8 @@ public class UserMapper {
             userInsertRequest.coursesTakenIds() != null ?
                     Arrays.stream(userInsertRequest.coursesTakenIds())
                             .map(id -> new CourseDto(id, null, null, null, null, null, null))
-                            .toList() : Collections.emptyList()
+                            .toList() : Collections.emptyList(),
+            userInsertRequest.role()
         );
     }
 
@@ -91,7 +96,8 @@ public class UserMapper {
             userUpdateRequest.coursesIds() != null ?
                     Arrays.stream(userUpdateRequest.coursesIds())
                             .map(id -> new CourseDto(id, null, null, null, null, null, null))
-                            .toList() : Collections.emptyList()
+                            .toList() : Collections.emptyList(),
+            userUpdateRequest.role()
         );
     }
 
@@ -109,7 +115,8 @@ public class UserMapper {
             userEntity.getCoursesTaken() != null ?
                     userEntity.getCoursesTaken().stream()
                             .map(CourseMapper::fromCourseEntityToCourseDto)
-                            .toList() : Collections.emptyList()
+                            .toList() : Collections.emptyList(),
+            userEntity.getRole()
         );
     }
 
@@ -136,7 +143,8 @@ public class UserMapper {
                 userDto.profilePictureUrl(),
                 userDto.password(),
                 userDto.createdAt(),
-                courses
+                courses,
+                userDto.role()
         );
     }
 
@@ -154,7 +162,8 @@ public class UserMapper {
             user.getCoursesTaken() != null ?
                     user.getCoursesTaken().stream()
                             .map(CourseMapper::fromCourseToCourseDto)
-                            .toList() : Collections.emptyList()
+                            .toList() : Collections.emptyList(),
+            user.getRole()
         );
     }
 
@@ -172,7 +181,8 @@ public class UserMapper {
             userDto.coursesTaken() != null ?
                     userDto.coursesTaken().stream()
                             .map(CourseMapper::fromCourseDtoToCourse)
-                            .toList() : Collections.emptyList()
+                            .toList() : Collections.emptyList(),
+            userDto.role()
         );
     }
 

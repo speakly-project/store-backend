@@ -85,7 +85,8 @@ public class UserServiceImpl implements UserService {
                 user.profilePictureUrl(),
                 hashedPassword,
                 user.createdAt(),
-                user.coursesTaken());
+                user.coursesTaken(),
+                user.role());
 
         return userRepository.save(createdUser);
     }

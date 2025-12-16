@@ -1,6 +1,7 @@
 package es.speakly.store_backend.domain.dto;
 
 
+import es.speakly.store_backend.domain.model.UserRole;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
@@ -16,7 +17,8 @@ public record UserDto(
     @NotNull(message = "Password cannot be null")
     String password,
     LocalDateTime createdAt,
-    List<CourseDto> coursesTaken
+    List<CourseDto> coursesTaken,
+    UserRole role
 ) {
     public UserDto {
         if (coursesTaken == null || coursesTaken.isEmpty()) {

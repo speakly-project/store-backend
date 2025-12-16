@@ -4,6 +4,7 @@ import es.speakly.store_backend.controller.webmodel.request.CourseInsertRequest;
 import es.speakly.store_backend.controller.webmodel.request.CourseUpdateRequest;
 import es.speakly.store_backend.controller.webmodel.response.CourseDetailResponse;
 import es.speakly.store_backend.controller.webmodel.response.CourseSummaryResponse;
+import es.speakly.store_backend.domain.model.UserRole;
 import es.speakly.store_backend.exceptions.BusinessException;
 import es.speakly.store_backend.domain.model.Course;
 import es.speakly.store_backend.persistence.dao.impl.entity.CourseJpaEntity;
@@ -153,8 +154,7 @@ public class CourseMapper {
                 courseDto.price(),
                 courseDto.language(),
                 courseDto.level(),
-                // preguntar
-                new UserJpaEntity(courseDto.teacherId(), null, null, null, null, null, null)
+                new UserJpaEntity(courseDto.teacherId(), null, null, null, null, null, null, UserRole.USER)
         );
     }
 
