@@ -1,6 +1,8 @@
 package es.speakly.store_backend.controller;
 
 
+import es.speakly.store_backend.annotations.Admin;
+import es.speakly.store_backend.annotations.Authenticated;
 import es.speakly.store_backend.controller.webmodel.request.LoginRequest;
 import es.speakly.store_backend.domain.dto.UserDto;
 import es.speakly.store_backend.domain.service.AuthService;
@@ -45,7 +47,7 @@ public class AuthController {
 
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
-
+    @Authenticated
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestHeader("Authorization") String token) {
         authService.deleteToken(token);

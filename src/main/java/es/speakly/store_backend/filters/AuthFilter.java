@@ -1,8 +1,8 @@
 package es.speakly.store_backend.filters;
 
 import es.speakly.store_backend.domain.dto.LoginUserDto;
-import es.speakly.store_backend.domain.dto.UserDto;
 import es.speakly.store_backend.domain.service.AuthService;
+import es.speakly.store_backend.exceptions.ResourceNotFoundException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,27 +29,26 @@ public class AuthFilter extends OncePerRequestFilter {
         String token = obtenerToken(request);
 
         if (token != null) {
-            LoginUserDto user = authService.getUserFromToken(token);
+            try {
+                LoginUserDto user = authService.getUserFromToken(token);
 
-//            if (user == null) {
-//                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//                response.getWriter().write("Token invalido");
-//                return;
-//            }
-
-            request.setAttribute("user", user);
+                if (user != null) {
+                    request.setAttribute("user", user);
+                }
+            } catch (ResourceNotFoundException e) {
+                request.setAttribute("user", null);
+            }
         }
+
         filterChain.doFilter(request, response);
     }
 
     private String obtenerToken(HttpServletRequest request) {
-        // 1️⃣ Header Authorization
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             return authHeader.substring(7);
         }
 
-        // 2️⃣ Query param ?token=
         return request.getParameter("token");
     }
 }

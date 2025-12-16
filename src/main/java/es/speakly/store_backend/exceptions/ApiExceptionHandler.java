@@ -10,6 +10,20 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler({UnauthorizedException.class})
+    @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ErrorMessage handleUnauthorizedException(UnauthorizedException ex) {
+        return new ErrorMessage(ex);
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler({ForbiddenException.class})
+    @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ErrorMessage handleForbiddenException(ForbiddenException ex) {
+        return new ErrorMessage(ex);
+    }
+
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler({ResourceNotFoundException.class})
     @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)

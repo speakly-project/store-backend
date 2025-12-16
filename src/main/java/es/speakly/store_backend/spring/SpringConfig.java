@@ -43,7 +43,7 @@ public class SpringConfig {
     public FilterRegistrationBean<AuthFilter> authFilter(AuthService authService) {
         FilterRegistrationBean<AuthFilter> registration = new FilterRegistrationBean<>();
         registration.setFilter(new AuthFilter(authService));
-        registration.addUrlPatterns("/api/speakly/admin/*");
+        registration.addUrlPatterns("/*");
         return registration;
     }
 

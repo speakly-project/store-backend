@@ -1,6 +1,7 @@
 package es.speakly.store_backend.controller;
 
 
+import es.speakly.store_backend.annotations.Admin;
 import es.speakly.store_backend.controller.webmodel.request.UserInsertRequest;
 import es.speakly.store_backend.controller.webmodel.request.UserUpdateRequest;
 import es.speakly.store_backend.controller.webmodel.response.UserDetailResponse;
@@ -60,7 +61,6 @@ public class UserController {
         UserDetailResponse userDetailResponse = UserMapper.fromUserDtoToUserDetailResponse(userService.getByEmail(email));
         return new ResponseEntity<>(userDetailResponse, HttpStatus.OK);
     }
-
     @PostMapping
     public ResponseEntity<UserDetailResponse> createUser(@RequestBody UserInsertRequest userInsertRequest) {
         UserDto userDto = UserMapper.fromUserInsertRequestToUserDto(userInsertRequest);
@@ -69,7 +69,6 @@ public class UserController {
         UserDetailResponse userDetailResponse = UserMapper.fromUserDtoToUserDetailResponse(createdUserDto);
         return new ResponseEntity<>(userDetailResponse, HttpStatus.CREATED);
     }
-
     @PutMapping("/{id}")
     public ResponseEntity<UserDetailResponse> updateUser(@PathVariable("id") Long id, @RequestBody UserUpdateRequest userUpdateRequest){
         if (!id.equals(userUpdateRequest.id())){
