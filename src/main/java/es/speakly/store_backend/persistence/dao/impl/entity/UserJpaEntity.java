@@ -20,6 +20,7 @@ public class UserJpaEntity implements Serializable {
     private String profilePictureUrl;
     private String encryptedPassword;
     private LocalDateTime createdAt;
+    @Enumerated(EnumType.STRING)
     private UserRole role;
     @ManyToMany
     @JoinTable(
