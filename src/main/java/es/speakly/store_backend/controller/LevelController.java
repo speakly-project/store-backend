@@ -32,22 +32,7 @@ public class LevelController {
         LevelDto levelDto = levelService.getById(id);
         return new ResponseEntity<>(levelDto, HttpStatus.OK);
     }
-//@GetMapping("/{id}")
-//public ResponseEntity<LevelDto> findLevelById(
-//        @PathVariable Long id,
-//        HttpServletRequest request
-//) {
-//    LoginUserDto user = (LoginUserDto) request.getAttribute("user");
-//    Long userId = user.id();
-//
-//    if (userId == null) {
-//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//    }
-//
-//    LevelDto levelDto = levelService.getById(id);
-//    return new ResponseEntity<>(levelDto, HttpStatus.OK);
-//}
-
+    
     @GetMapping("/amount")
     public ResponseEntity<Long> getLevelsAmount() {
         long amount = levelService.count();
