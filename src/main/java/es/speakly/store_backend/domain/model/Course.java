@@ -14,9 +14,10 @@ public class Course {
     private String language;
     private String level;
     private Long teacherId;
+    private int duration;
 
     public Course(Long id, String title, String description, BigDecimal price,
-                  String language, String level, Long teacherId) {
+                  String language, String level, Long teacherId, int duration) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -24,6 +25,7 @@ public class Course {
         this.language = language;
         this.level = level;
         this.teacherId = teacherId;
+        this.duration = duration;
     }
 
 
@@ -85,5 +87,13 @@ public class Course {
 
     public String getLanguage() {
         return language;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
     }
 }

@@ -24,6 +24,7 @@ CREATE TABLE courses (
                          price DECIMAL(10,2) NOT NULL,
                          language VARCHAR(50),
                          level VARCHAR(50),
+                         duration INT NOT NULL DEFAULT 0,
                          user_id INT NOT NULL,
                          FOREIGN KEY (user_id) REFERENCES users(id)
 );

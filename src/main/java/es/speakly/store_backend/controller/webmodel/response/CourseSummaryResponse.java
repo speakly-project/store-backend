@@ -7,6 +7,7 @@ public record CourseSummaryResponse(
         String description,
         BigDecimal price,
         String language,
-        String level
+        String level,
+        int duration
 ) {
 }

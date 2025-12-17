@@ -8,7 +8,8 @@ public record CourseInsertRequest(
         BigDecimal price,
         String language,
         String level,
-        Long teacherId
+        Long teacherId,
+        int duration
 ) {
 }
 

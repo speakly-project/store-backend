@@ -199,7 +199,7 @@ public class UserControllerTest {
                 "password456",
                 LocalDateTime.now(),
                 Stream.of(1L, 2L, 3L)
-                        .map(id -> new es.speakly.store_backend.domain.dto.CourseDto(id, "Course " + id, null, null, null,null,null))
+                        .map(id -> new es.speakly.store_backend.domain.dto.CourseDto(id, "Course " + id, null, null, null,null,null, 0))
                         .toList(),
                 USER
         );

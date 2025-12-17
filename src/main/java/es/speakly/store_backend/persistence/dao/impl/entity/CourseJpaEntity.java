@@ -19,7 +19,7 @@ public class CourseJpaEntity implements Serializable {
     private BigDecimal price;
     private String language;
     private String level;
-
+    private int duration;
     // ManyToOne: The instructor/creator of the course
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -32,13 +32,14 @@ public class CourseJpaEntity implements Serializable {
     public CourseJpaEntity() {}
 
     public CourseJpaEntity(Long id, String title, String description, BigDecimal price,
-                           String language, String level, UserJpaEntity user) {
+                           String language, String level, int duration, UserJpaEntity user) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.price = price;
         this.language = language;
         this.level = level;
+        this.duration = duration;
         this.user = user;
     }
 
@@ -64,6 +65,14 @@ public class CourseJpaEntity implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
     }
 
     public BigDecimal getPrice() {

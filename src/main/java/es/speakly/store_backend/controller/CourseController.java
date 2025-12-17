@@ -27,21 +27,21 @@ public class CourseController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<CourseSummaryResponse>> findAllCourses(
+    public ResponseEntity<Page<CourseDetailResponse>> findAllCourses(
             @RequestParam(required = false, defaultValue = "1") int pageNumber,
             @RequestParam(required = false, defaultValue = "10") int pageSize) {
         Page<CourseDto> coursesDtoPage = courseService.getAll(pageNumber, pageSize);
 
-        List<CourseSummaryResponse> courseSummaryResponses = coursesDtoPage.data().stream()
-                .map(CourseMapper::fromCourseDtoToCourseSummaryResponse).toList();
+        List<CourseDetailResponse> courseDetailResponses = coursesDtoPage.data().stream()
+                .map(CourseMapper::fromCourseDtoToCourseDetailResponse).toList();
 
-        Page<CourseSummaryResponse> courseSummaryResponsePage = new Page<>(
-                courseSummaryResponses,
+        Page<CourseDetailResponse> courseDetailResponsePage = new Page<>(
+                courseDetailResponses,
                 coursesDtoPage.pageNumber(),
                 coursesDtoPage.pageSize(),
                 coursesDtoPage.totalElements()
         );
-        return new ResponseEntity<>(courseSummaryResponsePage, HttpStatus.OK);
+        return new ResponseEntity<>(courseDetailResponsePage, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

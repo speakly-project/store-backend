@@ -34,7 +34,8 @@ public class CourseMapper {
                 courseDto.description(),
                 courseDto.price(),
                 courseDto.language(),
-                courseDto.level()
+                courseDto.level(),
+                courseDto.duration()
         );
     }
 
@@ -50,7 +51,8 @@ public class CourseMapper {
                 courseDto.price(),
                 courseDto.language(),
                 courseDto.level(),
-                courseDto.teacherId()
+                courseDto.teacherId(),
+                courseDto.duration()
         );
     }
 
@@ -65,7 +67,8 @@ public class CourseMapper {
                 request.price(),
                 request.language(),
                 request.level(),
-                request.teacherId()
+                request.teacherId(),
+                request.duration()
         );
     }
 
@@ -80,7 +83,8 @@ public class CourseMapper {
                 request.price(),
                 request.language(),
                 request.level(),
-                request.teacherId()
+                request.teacherId(),
+                request.duration()
         );
     }
 
@@ -96,7 +100,8 @@ public class CourseMapper {
                 courseEntity.getPrice(),
                 courseEntity.getLanguage(),
                 courseEntity.getLevel(),
-                courseEntity.getUser() != null ? courseEntity.getUser().getId() : null
+                courseEntity.getUser() != null ? courseEntity.getUser().getId() : null,
+                courseEntity.getDuration()
         );
     }
 
@@ -113,7 +118,8 @@ public class CourseMapper {
                 course.getPrice(),
                 course.getLanguage(),
                 course.getLevel(),
-                course.getTeacherId()
+                course.getTeacherId(),
+                course.getDuration()
         );
     }
 
@@ -129,7 +135,8 @@ public class CourseMapper {
                 courseDto.price(),
                 courseDto.language(),
                 courseDto.level(),
-                courseDto.teacherId()
+                courseDto.teacherId(),
+                courseDto.duration()
         );
     }
 
@@ -139,14 +146,6 @@ public class CourseMapper {
         if (courseDto == null) {
             return null;
         }
-//        CourseJpaEntity courseEntity = new CourseJpaEntity();
-//        courseEntity.setId(courseDto.id());
-//        courseEntity.setTitle(courseDto.title());
-//        courseEntity.setDescription(courseDto.description());
-//        courseEntity.setPrice(courseDto.price());
-//        courseEntity.setLanguage(courseDto.language());
-//        courseEntity.setLevel(courseDto.level());
-//        return courseEntity;
         return new CourseJpaEntity(
                 courseDto.id(),
                 courseDto.title(),
@@ -154,6 +153,7 @@ public class CourseMapper {
                 courseDto.price(),
                 courseDto.language(),
                 courseDto.level(),
+                courseDto.duration(),
                 new UserJpaEntity(courseDto.teacherId(), null, null, null, null, null, null, UserRole.USER)
         );
     }
@@ -169,9 +169,11 @@ public class CourseMapper {
                 courseEntity.getPrice(),
                 courseEntity.getLanguage(),
                 courseEntity.getLevel(),
-                courseEntity.getUser() != null ? courseEntity.getUser().getId() : null
+                courseEntity.getUser() != null ? courseEntity.getUser().getId() : null,
+                courseEntity.getDuration()
         );
     }
 
 
 }
+
