@@ -32,7 +32,7 @@ public class LevelController {
         LevelDto levelDto = levelService.getById(id);
         return new ResponseEntity<>(levelDto, HttpStatus.OK);
     }
-    
+
     @GetMapping("/amount")
     public ResponseEntity<Long> getLevelsAmount() {
         long amount = levelService.count();
