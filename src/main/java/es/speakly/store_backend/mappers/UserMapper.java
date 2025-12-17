@@ -76,7 +76,7 @@ public class UserMapper {
             userInsertRequest.createdAt(),
             userInsertRequest.coursesTakenIds() != null ?
                     Arrays.stream(userInsertRequest.coursesTakenIds())
-                            .map(id -> new CourseDto(id, null, null, null, null, null, null, 0))
+                            .map(id -> new CourseDto(id, null, null, null, null, null, null, 0, null))
                             .toList() : Collections.emptyList(),
             userInsertRequest.role()
         );
@@ -95,7 +95,7 @@ public class UserMapper {
             userUpdateRequest.createAt(),
             userUpdateRequest.coursesIds() != null ?
                     Arrays.stream(userUpdateRequest.coursesIds())
-                            .map(id -> new CourseDto(id, null, null, null, null, null, null, 0))
+                            .map(id -> new CourseDto(id, null, null, null, null, null, null, 0, null))
                             .toList() : Collections.emptyList(),
             userUpdateRequest.role()
         );

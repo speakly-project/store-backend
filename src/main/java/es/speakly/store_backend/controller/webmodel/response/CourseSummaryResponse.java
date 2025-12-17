@@ -1,6 +1,7 @@
 package es.speakly.store_backend.controller.webmodel.response;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public record CourseSummaryResponse(
         String title,
@@ -8,6 +9,7 @@ public record CourseSummaryResponse(
         BigDecimal price,
         String language,
         String level,
-        int duration
+        int duration,
+        LocalDateTime createdAt
 ) {
 }

@@ -1,6 +1,7 @@
 package es.speakly.store_backend.domain.model;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 
@@ -15,9 +16,10 @@ public class Course {
     private String level;
     private Long teacherId;
     private int duration;
+    private LocalDateTime createdAt;
 
     public Course(Long id, String title, String description, BigDecimal price,
-                  String language, String level, Long teacherId, int duration) {
+                  String language, String level, Long teacherId, int duration, LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -26,6 +28,7 @@ public class Course {
         this.level = level;
         this.teacherId = teacherId;
         this.duration = duration;
+        this.createdAt = createdAt;
     }
 
 
@@ -95,5 +98,13 @@ public class Course {
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

@@ -1,6 +1,7 @@
 package es.speakly.store_backend.controller.webmodel.response;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public record CourseDetailResponse(
         Long id,
@@ -10,6 +11,7 @@ public record CourseDetailResponse(
         String language,
         String level,
         Long teacherId,
-        int duration
+        int duration,
+        LocalDateTime createdAt
 ) {
 }

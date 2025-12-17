@@ -1,6 +1,7 @@
 package es.speakly.store_backend.domain.dto;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public record CourseDto(
         Long id,
@@ -10,7 +11,8 @@ public record CourseDto(
         String language,
         String level,
         Long teacherId,
-        int duration
+        int duration,
+        LocalDateTime createdAt
 ) {
 
 }

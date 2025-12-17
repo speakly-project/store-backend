@@ -35,7 +35,8 @@ public class CourseMapper {
                 courseDto.price(),
                 courseDto.language(),
                 courseDto.level(),
-                courseDto.duration()
+                courseDto.duration(),
+                courseDto.createdAt()
         );
     }
 
@@ -52,7 +53,8 @@ public class CourseMapper {
                 courseDto.language(),
                 courseDto.level(),
                 courseDto.teacherId(),
-                courseDto.duration()
+                courseDto.duration(),
+                courseDto.createdAt()
         );
     }
 
@@ -68,7 +70,8 @@ public class CourseMapper {
                 request.language(),
                 request.level(),
                 request.teacherId(),
-                request.duration()
+                request.duration(),
+                null
         );
     }
 
@@ -84,7 +87,8 @@ public class CourseMapper {
                 request.language(),
                 request.level(),
                 request.teacherId(),
-                request.duration()
+                request.duration(),
+                null
         );
     }
 
@@ -101,7 +105,8 @@ public class CourseMapper {
                 courseEntity.getLanguage(),
                 courseEntity.getLevel(),
                 courseEntity.getUser() != null ? courseEntity.getUser().getId() : null,
-                courseEntity.getDuration()
+                courseEntity.getDuration(),
+                courseEntity.getCreatedAt()
         );
     }
 
@@ -119,7 +124,8 @@ public class CourseMapper {
                 course.getLanguage(),
                 course.getLevel(),
                 course.getTeacherId(),
-                course.getDuration()
+                course.getDuration(),
+                course.getCreatedAt()
         );
     }
 
@@ -136,7 +142,8 @@ public class CourseMapper {
                 courseDto.language(),
                 courseDto.level(),
                 courseDto.teacherId(),
-                courseDto.duration()
+                courseDto.duration(),
+                courseDto.createdAt()
         );
     }
 
@@ -170,7 +177,8 @@ public class CourseMapper {
                 courseEntity.getLanguage(),
                 courseEntity.getLevel(),
                 courseEntity.getUser() != null ? courseEntity.getUser().getId() : null,
-                courseEntity.getDuration()
+                courseEntity.getDuration(),
+                courseEntity.getCreatedAt()
         );
     }
 
