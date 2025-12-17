@@ -176,7 +176,7 @@ insert into levels (name) values
                               ('B2'),
                               ('C1'),
                               ('C2'),
-                              ('BASIC'),
-                              ('INTERMEDIATE'),
-                              ('ADVANCED');
+                              ('Beginner'),
+                              ('Intermediate'),
+                              ('Advanced');
 
