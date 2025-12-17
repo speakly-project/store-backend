@@ -70,6 +70,7 @@ public class CourseController {
         );
         return new ResponseEntity<>(courseSummaryResponsePage, HttpStatus.OK);
     }
+
     @Admin
     @PostMapping
     public ResponseEntity<CourseDetailResponse> createCourse(@RequestBody CourseInsertRequest courseInsertRequest) {
@@ -79,6 +80,7 @@ public class CourseController {
         CourseDetailResponse courseDetailResponse = CourseMapper.fromCourseDtoToCourseDetailResponse(createdCourseDto);
         return new ResponseEntity<>(courseDetailResponse, HttpStatus.CREATED);
     }
+
     @Admin
     @PutMapping("/{id}")
     public ResponseEntity<CourseDetailResponse> updateCourse(
@@ -93,6 +95,7 @@ public class CourseController {
         CourseDetailResponse courseDetailResponse = CourseMapper.fromCourseDtoToCourseDetailResponse(updatedCourseDto);
         return new ResponseEntity<>(courseDetailResponse, HttpStatus.OK);
     }
+
     @Admin
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCourse(@PathVariable("id") Long id) {

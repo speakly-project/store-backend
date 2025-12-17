@@ -27,6 +27,7 @@ public class LevelController {
         Page<LevelDto> levelsDtoPage = levelService.getAll(pageNumber, pageSize);
         return new ResponseEntity<>(levelsDtoPage, HttpStatus.OK);
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<LevelDto> findLevelById(@PathVariable Long id) {
         LevelDto levelDto = levelService.getById(id);

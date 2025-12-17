@@ -61,6 +61,7 @@ public class UserController {
         UserDetailResponse userDetailResponse = UserMapper.fromUserDtoToUserDetailResponse(userService.getByEmail(email));
         return new ResponseEntity<>(userDetailResponse, HttpStatus.OK);
     }
+
     @PostMapping
     public ResponseEntity<UserDetailResponse> createUser(@RequestBody UserInsertRequest userInsertRequest) {
         UserDto userDto = UserMapper.fromUserInsertRequestToUserDto(userInsertRequest);
@@ -69,6 +70,8 @@ public class UserController {
         UserDetailResponse userDetailResponse = UserMapper.fromUserDtoToUserDetailResponse(createdUserDto);
         return new ResponseEntity<>(userDetailResponse, HttpStatus.CREATED);
     }
+
+    @Admin
     @PutMapping("/{id}")
     public ResponseEntity<UserDetailResponse> updateUser(@PathVariable("id") Long id, @RequestBody UserUpdateRequest userUpdateRequest){
         if (!id.equals(userUpdateRequest.id())){
@@ -81,6 +84,7 @@ public class UserController {
         return new ResponseEntity<>(userDetailResponse, HttpStatus.OK);
     }
 
+    @Admin
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
         userService.delete(id);

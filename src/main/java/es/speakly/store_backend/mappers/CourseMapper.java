@@ -71,7 +71,7 @@ public class CourseMapper {
                 request.level(),
                 request.teacherId(),
                 request.duration(),
-                null
+                request.createdAt()
         );
     }
 

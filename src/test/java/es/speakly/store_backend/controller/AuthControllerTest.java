@@ -2,6 +2,7 @@ package es.speakly.store_backend.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import es.speakly.store_backend.annotations.AuthenticationInterceptor;
 import es.speakly.store_backend.controller.webmodel.request.LoginRequest;
 import es.speakly.store_backend.domain.dto.UserDto;
 import es.speakly.store_backend.domain.service.AuthService;
@@ -37,6 +38,18 @@ class AuthControllerTest {
 
     @MockitoBean
     private UserService userService;
+
+    @MockitoBean
+    private AuthenticationInterceptor authenticationInterceptor;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        Mockito.when(authenticationInterceptor.preHandle(
+                Mockito.any(),
+                Mockito.any(),
+                Mockito.any()
+        )).thenReturn(true);
+    }
 
     @BeforeEach
     void resetMocks() {
@@ -91,17 +104,17 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isUnauthorized());
     }
-// hace falta mockear el token para este test
-//    @Test
-//    void logout_ok() throws Exception {
-//        String token = "Bearer jwt-token";
-//
-//        doNothing().when(authService).deleteToken(token);
-//
-//        mockMvc.perform(post("/api/speakly/auth/logout")
-//                        .header("Authorization", token))
-//                .andExpect(status().isNoContent());
-//
-//        verify(authService).deleteToken(token);
-//    }
+
+    @Test
+    void logout_ok() throws Exception {
+        String token = "Bearer jwt-token";
+
+        doNothing().when(authService).deleteToken(token);
+
+        mockMvc.perform(post("/api/speakly/auth/logout")
+                        .header("Authorization", token))
+                .andExpect(status().isNoContent());
+
+        verify(authService).deleteToken(token);
+    }
 }

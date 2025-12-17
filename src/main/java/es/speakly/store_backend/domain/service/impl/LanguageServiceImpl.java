@@ -25,11 +25,10 @@ public class LanguageServiceImpl implements LanguageService {
 
         Page<LanguageDto> languageDtoPage = languageRepository.findAll(pageNumber, pageSize);
 
-        // Convert to domain model to apply business logic, then back to DTO
         List<LanguageDto> validatedLanguages = languageDtoPage.data()
                 .stream()
-                .map(LanguageMapper::fromLanguageDtoToLanguage)  // DTO → Domain Model (validates)
-                .map(LanguageMapper::fromLanguageToLanguageDto)   // Domain Model → DTO
+                .map(LanguageMapper::fromLanguageDtoToLanguage)
+                .map(LanguageMapper::fromLanguageToLanguageDto)
                 .toList();
 
         return new Page<>(
@@ -43,7 +42,7 @@ public class LanguageServiceImpl implements LanguageService {
     @Override
     public LanguageDto getById(Long id) {
         return languageRepository.findById(id)
-                .map(LanguageMapper::fromLanguageDtoToLanguage)  // Validate through domain model
+                .map(LanguageMapper::fromLanguageDtoToLanguage)
                 .map(LanguageMapper::fromLanguageToLanguageDto)
                 .orElseThrow(() -> new ResourceNotFoundException("Language not found with id: " + id));
     }

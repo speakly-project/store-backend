@@ -1,6 +1,7 @@
 package es.speakly.store_backend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import es.speakly.store_backend.annotations.AuthenticationInterceptor;
 import es.speakly.store_backend.controller.webmodel.request.LevelInsertRequest;
 import es.speakly.store_backend.domain.dto.LevelDto;
 import es.speakly.store_backend.domain.model.Page;
@@ -36,6 +37,18 @@ public class LevelControllerTest {
     @BeforeEach
     void resetMocks() {
         Mockito.reset(levelService);
+    }
+
+    @MockitoBean
+    private AuthenticationInterceptor authenticationInterceptor;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        Mockito.when(authenticationInterceptor.preHandle(
+                Mockito.any(),
+                Mockito.any(),
+                Mockito.any()
+        )).thenReturn(true);
     }
 
     @Test
@@ -113,45 +126,45 @@ public class LevelControllerTest {
 
         verify(levelService).count();
     }
-// hay que mockear token para que funcionenn estos tests
-//    @Test
-//    void createLevel() throws Exception {
-//        LevelInsertRequest levelInsertRequest = new LevelInsertRequest("D1");
-//
-//        LevelDto createdLevel = new LevelDto(10L, "D1");
-//
-//        when(levelService.createLevel(any())).thenReturn(createdLevel);
-//
-//        mockMvc.perform(post("/api/speakly/levels")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(levelInsertRequest)))
-//                .andExpect(status().isCreated())
-//                .andExpect(content().contentType("application/json"))
-//                .andExpect(jsonPath("$.id").value(10))
-//                .andExpect(jsonPath("$.name").value("D1"));
-//
-//        verify(levelService).createLevel(any(LevelDto.class));
-//    }
-//
-//    @Test
-//    void createLevelWithMissingName() throws Exception {
-//        String invalidLevelJson = """
-//                {
-//                    "name": null
-//                }
-//                """;
-//
-//        mockMvc.perform(post("/api/speakly/levels")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(invalidLevelJson))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void createLevelWithEmptyBody() throws Exception {
-//        mockMvc.perform(post("/api/speakly/levels")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content("{}"))
-//                .andExpect(status().isBadRequest());
-//    }
+
+    @Test
+    void createLevel() throws Exception {
+        LevelInsertRequest levelInsertRequest = new LevelInsertRequest("D1");
+
+        LevelDto createdLevel = new LevelDto(10L, "D1");
+
+        when(levelService.createLevel(any())).thenReturn(createdLevel);
+
+        mockMvc.perform(post("/api/speakly/levels")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(levelInsertRequest)))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(jsonPath("$.id").value(10))
+                .andExpect(jsonPath("$.name").value("D1"));
+
+        verify(levelService).createLevel(any(LevelDto.class));
+    }
+
+    @Test
+    void createLevelWithMissingName() throws Exception {
+        String invalidLevelJson = """
+                {
+                    "name": null
+                }
+                """;
+
+        mockMvc.perform(post("/api/speakly/levels")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidLevelJson))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createLevelWithEmptyBody() throws Exception {
+        mockMvc.perform(post("/api/speakly/levels")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest());
+    }
 }

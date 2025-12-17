@@ -8,6 +8,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class UserDaoJpaImpl implements UserDao {
@@ -56,17 +57,15 @@ public class UserDaoJpaImpl implements UserDao {
 
     @Override
     public UserJpaEntity insert(UserJpaEntity entity) {
-        // For ManyToMany relationship, we need to fetch existing courses from DB
         if (entity.getCoursesTaken() != null && !entity.getCoursesTaken().isEmpty()) {
             List<CourseJpaEntity> managedCourses = entity.getCoursesTaken().stream()
                     .map(course -> {
                         if (course.getId() != null) {
-                            // Fetch existing course from database
                             return entityManager.find(CourseJpaEntity.class, course.getId());
                         }
-                        return course; // New course
+                        return course;
                     })
-                    .filter(course -> course != null) // Remove nulls (non-existent IDs)
+                    .filter(Objects::nonNull)
                     .toList();
 
             entity.getCoursesTaken().clear();

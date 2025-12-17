@@ -2,6 +2,7 @@ package es.speakly.store_backend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import es.speakly.store_backend.annotations.AuthenticationInterceptor;
 import es.speakly.store_backend.controller.webmodel.request.UserInsertRequest;
 import es.speakly.store_backend.domain.dto.UserDto;
 import es.speakly.store_backend.domain.model.Page;
@@ -48,6 +49,18 @@ public class UserControllerTest {
     @BeforeEach
     void resetMocks() {
         Mockito.reset(userService);
+    }
+
+    @MockitoBean
+    private AuthenticationInterceptor authenticationInterceptor;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        Mockito.when(authenticationInterceptor.preHandle(
+                Mockito.any(),
+                Mockito.any(),
+                Mockito.any()
+        )).thenReturn(true);
     }
 
 
@@ -133,14 +146,13 @@ public class UserControllerTest {
         UserInsertRequest userInsertRequest = new UserInsertRequest(
                 "test_user_new",
                 "test_new@example.com",
-                "secret123",
                 "https://example.com/avatar.png",
+                "secret123",
                 null,
                 null,
                 USER
         );
 
-        objectMapper.registerModule(new JavaTimeModule());
         String newUserJson = objectMapper.writeValueAsString(userInsertRequest);
 
         UserDto createdUser = new UserDto(
