@@ -3,10 +3,7 @@ package es.speakly.store_backend.controller;
 import es.speakly.store_backend.annotations.Admin;
 import es.speakly.store_backend.controller.webmodel.request.CourseInsertRequest;
 import es.speakly.store_backend.controller.webmodel.request.CourseUpdateRequest;
-import es.speakly.store_backend.controller.webmodel.response.CourseDetailResponse;
-import es.speakly.store_backend.controller.webmodel.response.CourseSummaryResponse;
-import es.speakly.store_backend.controller.webmodel.response.CourseDetailWithTeacherResponse;
-import es.speakly.store_backend.controller.webmodel.response.UserSummaryResponse;
+import es.speakly.store_backend.controller.webmodel.response.*;
 import es.speakly.store_backend.domain.dto.CourseDto;
 import es.speakly.store_backend.domain.dto.UserDto;
 import es.speakly.store_backend.domain.model.Page;
@@ -67,8 +64,8 @@ public class CourseController {
                             teacherDto = null;
                         }
                     }
-                    UserSummaryResponse teacherSummary = UserMapper.fromUserDtoToUserSummaryResponse(teacherDto);
-                    return CourseMapper.fromCourseDtoToCourseDetailWithTeacherResponse(courseDto, teacherSummary);
+                    UserDetailResponse teacherDetail = UserMapper.fromUserDtoToUserDetailResponse(teacherDto);
+                    return CourseMapper.fromCourseDtoToCourseDetailWithTeacherResponse(courseDto, teacherDetail);
                 })
                 .toList();
 

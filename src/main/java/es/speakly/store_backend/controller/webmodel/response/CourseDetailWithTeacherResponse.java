@@ -10,7 +10,7 @@ public record CourseDetailWithTeacherResponse(
         BigDecimal price,
         String language,
         String level,
-        UserSummaryResponse teacher,
+        UserDetailResponse teacher,
         int duration,
         LocalDateTime createdAt
 ) {
