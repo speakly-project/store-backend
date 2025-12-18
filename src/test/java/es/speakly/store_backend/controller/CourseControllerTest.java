@@ -8,6 +8,7 @@ import es.speakly.store_backend.controller.webmodel.request.CourseUpdateRequest;
 import es.speakly.store_backend.domain.dto.CourseDto;
 import es.speakly.store_backend.domain.model.Page;
 import es.speakly.store_backend.domain.service.CourseService;
+import es.speakly.store_backend.domain.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,9 @@ public class CourseControllerTest {
 
     @MockitoBean
     private CourseService courseService;
+
+    @MockitoBean
+    private UserService userService;
 
     @Autowired
     private ObjectMapper objectMapper;
