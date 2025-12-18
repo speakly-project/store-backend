@@ -3,6 +3,7 @@ package es.speakly.store_backend.mappers;
 import es.speakly.store_backend.controller.webmodel.request.CourseInsertRequest;
 import es.speakly.store_backend.controller.webmodel.request.CourseUpdateRequest;
 import es.speakly.store_backend.controller.webmodel.response.CourseDetailResponse;
+import es.speakly.store_backend.controller.webmodel.response.CourseDetailWithTeacherResponse;
 import es.speakly.store_backend.controller.webmodel.response.CourseSummaryResponse;
 import es.speakly.store_backend.domain.model.UserRole;
 import es.speakly.store_backend.exceptions.BusinessException;
@@ -10,6 +11,7 @@ import es.speakly.store_backend.domain.model.Course;
 import es.speakly.store_backend.persistence.dao.impl.entity.CourseJpaEntity;
 import es.speakly.store_backend.persistence.dao.impl.entity.UserJpaEntity;
 import es.speakly.store_backend.domain.dto.CourseDto;
+import es.speakly.store_backend.controller.webmodel.response.UserSummaryResponse;
 
 public class CourseMapper {
 
@@ -53,6 +55,23 @@ public class CourseMapper {
                 courseDto.language(),
                 courseDto.level(),
                 courseDto.teacherId(),
+                courseDto.duration(),
+                courseDto.createdAt()
+        );
+    }
+
+    public static CourseDetailWithTeacherResponse fromCourseDtoToCourseDetailWithTeacherResponse(CourseDto courseDto, UserSummaryResponse teacher) {
+        if (courseDto == null) {
+            return null;
+        }
+        return new CourseDetailWithTeacherResponse(
+                courseDto.id(),
+                courseDto.title(),
+                courseDto.description(),
+                courseDto.price(),
+                courseDto.language(),
+                courseDto.level(),
+                teacher,
                 courseDto.duration(),
                 courseDto.createdAt()
         );
@@ -184,4 +203,3 @@ public class CourseMapper {
 
 
 }
-

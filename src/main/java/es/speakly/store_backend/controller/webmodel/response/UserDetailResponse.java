@@ -11,7 +11,6 @@ public record UserDetailResponse(
     String username,
     String email,
     String profilePictureUrl,
-    String password,
     LocalDateTime createdAt,
     List<CourseSummaryResponse> coursesTaken,
     UserRole role

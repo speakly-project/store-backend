@@ -39,7 +39,6 @@ public class UserMapper {
             userDto.username(),
             userDto.email(),
             userDto.profilePictureUrl(),
-            userDto.password(),
             userDto.createdAt()
         );
     }
@@ -53,7 +52,6 @@ public class UserMapper {
             userDto.username(),
             userDto.email(),
             userDto.profilePictureUrl(),
-            userDto.password(),
             userDto.createdAt(),
             userDto.coursesTaken() != null ?
                     userDto.coursesTaken().stream()

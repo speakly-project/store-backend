@@ -6,7 +6,6 @@ public record UserSummaryResponse(
         String username,
         String email,
         String profilePictureUrl,
-        String password,
         LocalDateTime createdAt
 
 ) {

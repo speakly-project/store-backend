@@ -136,7 +136,6 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.username").value("test_user"))
                 .andExpect(jsonPath("$.email").value("usesrdto@gmail.com"))
-                .andExpect(jsonPath("$.password").value("hashedpassword"))
                 .andExpect(jsonPath("$.createdAt").value(createdAtString))
                 .andExpect(jsonPath("$.coursesTaken").isArray());
     }
@@ -180,7 +179,6 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.username").value("test_user_new"))
                 .andExpect(jsonPath("$.email").value("test_new@example.com"))
                 .andExpect(jsonPath("$.profilePictureUrl").value("https://example.com/avatar.png"))
-                .andExpect(jsonPath("$.password").value("secret123"))
                 .andExpect(jsonPath("$.createdAt").value(createdAtString))
                 .andExpect(jsonPath("$.coursesTaken").isArray());
 
