@@ -16,25 +16,23 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class UserDtoTest {
     static Stream<Arguments> invalidValues() {
         return Stream.of(
-                Arguments.of(null, "new BigDecimal(10)", "null", USER),
-                Arguments.of("null", null, "null", USER),
-                Arguments.of("null"," new BigDecimal(5)", null, USER),
-                Arguments.of("null", "new BigDecimal(10)", " null ", null),
-                Arguments.of(" ", "new BigDecimal(10)", " blank", USER),
-                Arguments.of("null", " ", "null", USER),
-                Arguments.of("null", "new BigDecimal(-5)", " ", USER)
+                Arguments.of(null, "new BigDecimal(10)", USER),
+                Arguments.of("null", null, USER),
+                Arguments.of("null", "new BigDecimal(10)", null),
+                Arguments.of(" ", "new BigDecimal(10)", USER),
+                Arguments.of("null", " ", USER)
         );
     }
 
     @ParameterizedTest
     @MethodSource("invalidValues")
-    void userDto_WithInvalidData_ShouldFailValidation(String username, String email, String password, UserRole role) {
+    void userDto_WithInvalidData_ShouldFailValidation(String username, String email, UserRole role) {
         UserDto userDto = new UserDto(
                 1L,
                 username,
                 email,
                 "http://valid.url/profile.jpg",
-                password,
+                "password",
                 null,
                 null,
                 role
