@@ -89,7 +89,7 @@ public class UserMapper {
             userUpdateRequest.username(),
             userUpdateRequest.email(),
             userUpdateRequest.profilePictureUrl(),
-            userUpdateRequest.password(),
+            null,
             userUpdateRequest.createAt(),
             userUpdateRequest.coursesIds() != null ?
                     Arrays.stream(userUpdateRequest.coursesIds())

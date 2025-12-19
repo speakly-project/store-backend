@@ -106,6 +106,7 @@ public class UserServiceImpl implements UserService {
                 throw new ValidationException("Course id " + course.id() + " is not valid");
             }
         });
+
         return userRepository.save(user);
     }
 

@@ -5,7 +5,7 @@ import es.speakly.store_backend.annotations.Admin;
 import es.speakly.store_backend.controller.webmodel.request.UserInsertRequest;
 import es.speakly.store_backend.controller.webmodel.request.UserUpdateRequest;
 import es.speakly.store_backend.controller.webmodel.response.UserDetailResponse;
-import es.speakly.store_backend.controller.webmodel.response.UserSummaryResponse;
+import es.speakly.store_backend.controller.webmodel.response.UserDetailResponse;
 import es.speakly.store_backend.domain.dto.UserDto;
 import es.speakly.store_backend.domain.model.Page;
 import es.speakly.store_backend.domain.service.UserService;
@@ -28,15 +28,15 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<UserSummaryResponse>> findAllUsers(@RequestParam(required = false, defaultValue = "1") int pageNumber,
+    public ResponseEntity<Page<UserDetailResponse>> findAllUsers(@RequestParam(required = false, defaultValue = "1") int pageNumber,
                                                                   @RequestParam(required = false, defaultValue = "10") int pageSize) {
         Page<UserDto> usersDtoPage = userService.getAll(pageNumber, pageSize);
 
-        List<UserSummaryResponse> userSummaryResponses = usersDtoPage.data().stream()
-                .map(UserMapper::fromUserDtoToUserSummaryResponse).toList();
+        List<UserDetailResponse> userDetailResponses = usersDtoPage.data().stream()
+                .map(UserMapper::fromUserDtoToUserDetailResponse).toList();
 
-        Page<UserSummaryResponse> userSummaryResponsePage = new Page<>(
-                userSummaryResponses,
+        Page<UserDetailResponse> userSummaryResponsePage = new Page<>(
+                userDetailResponses,
                 usersDtoPage.pageNumber(),
                 usersDtoPage.pageSize(),
                 usersDtoPage.totalElements()

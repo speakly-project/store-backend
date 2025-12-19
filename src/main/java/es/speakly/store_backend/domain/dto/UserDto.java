@@ -15,7 +15,6 @@ public record UserDto(
     @NotBlank(message = "Email cannot be null or empty")
     String email,
     String profilePictureUrl,
-    @NotBlank(message = "Password cannot be null or empty")
     String password,
     LocalDateTime createdAt,
     List<CourseDto> coursesTaken,
