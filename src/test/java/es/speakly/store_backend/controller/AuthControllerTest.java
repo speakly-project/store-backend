@@ -58,7 +58,7 @@ class AuthControllerTest {
 
     @Test
     void login_ok_when_user_exists() throws Exception {
-        LoginRequest loginRequest = new LoginRequest("test@email.com", "password");
+        LoginRequest loginRequest = new LoginRequest("testuser", "password");
         UserDto user = new UserDto(
                 1L,
                 "testuser",
@@ -70,7 +70,7 @@ class AuthControllerTest {
                 USER
         );
 
-        when(userService.getByEmail("test@email.com")).thenReturn(user);
+        when(userService.getByUsername("testuser")).thenReturn(user);
         when(authService.createTokenForUser(user)).thenReturn("jwt-token");
 
         mockMvc.perform(post("/api/speakly/auth/login")

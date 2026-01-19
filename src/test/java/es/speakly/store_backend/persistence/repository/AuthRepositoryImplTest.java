@@ -43,7 +43,7 @@ public class AuthRepositoryImplTest {
         assertAll(
                 () -> assertTrue(result.isPresent()),
                 () -> assertEquals(loginUserDto.id(), result.get().id()),
-                () -> assertEquals(loginUserDto.email(), result.get().email())
+                () -> assertEquals(loginUserDto.username(), result.get().username())
         );
         verify(authDao).findByToken(token);
     }

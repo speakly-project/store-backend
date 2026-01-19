@@ -72,7 +72,7 @@ public class AuthServiceImplTest {
 
             assertNotNull(result);
             assertEquals(loginUserDto.id(), result.id());
-            assertEquals(loginUserDto.email(), result.email());
+            assertEquals(loginUserDto.username(), result.username());
             verify(authRepository).findByToken(token);
         }
 

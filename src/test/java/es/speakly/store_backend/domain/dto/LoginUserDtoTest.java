@@ -24,10 +24,10 @@ public class LoginUserDtoTest {
 
     @ParameterizedTest
     @MethodSource("invalidValues")
-    void loginUserDto_WithInvalidData_ShouldFailValidation(String email, UserRole role) {
+    void loginUserDto_WithInvalidData_ShouldFailValidation(String username, UserRole role) {
         LoginUserDto loginUserDto = new LoginUserDto(
                 1L,
-                email,
+                username,
                 role
         );
         assertThrows(ValidationException.class, () -> DtoValidator.validate(loginUserDto));

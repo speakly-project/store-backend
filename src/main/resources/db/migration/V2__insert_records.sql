@@ -1,8 +1,3 @@
--- =============================================
---  V2__initial_data.sql
---  Initial seed data for users and courses
--- =============================================
-
 -- ================
 -- USERS
 -- ================
@@ -149,6 +144,9 @@ INSERT INTO courses (title, description, price, language, level, duration, user_
                                                                                         ('Greek Conversation', 'Improve spoken Greek.', 35.99, 'Greek', 'Intermediate', 46, 26),
                                                                                         ('Ancient Greek for Beginners', 'Introduction to classical Greek.', 49.99, 'Greek', 'Advanced', 55, 26);
 
+-- ================
+-- LANGUAGES
+-- ================
      INSERT INTO languages (code, name) VALUES
     ('en', 'English'),
     ('es', 'Spanish'),
@@ -166,8 +164,9 @@ INSERT INTO courses (title, description, price, language, level, duration, user_
     ('no', 'Norwegian'),
     ('pl', 'Polish'),
     ('el', 'Greek');
+
 -- ================
--- LEVELS (CEFR + Custom levels)
+-- LEVELS
 -- ================
 insert into levels (name) values
                               ('A1'),

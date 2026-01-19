@@ -30,7 +30,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
         DtoValidator.validate(loginRequest);
-        UserDto user = userService.getByEmail(loginRequest.email());
+        UserDto user = userService.getByUsername(loginRequest.username());
 
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

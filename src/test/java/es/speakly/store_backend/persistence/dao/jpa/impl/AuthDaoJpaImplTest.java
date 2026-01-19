@@ -63,7 +63,7 @@ public class AuthDaoJpaImplTest {
         assertAll(
                 () -> assertTrue(result.isPresent()),
                 () -> assertEquals(userJpaEntity.getId(), result.get().id()),
-                () -> assertEquals(userJpaEntity.getEmail(), result.get().email()),
+                () -> assertEquals(userJpaEntity.getEmail(), result.get().username()),
                 () -> assertEquals(userJpaEntity.getRole(), result.get().role())
         );
     }

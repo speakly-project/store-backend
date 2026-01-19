@@ -1,12 +1,3 @@
--- =============================================
---  V1__init.sql
---  Initial schema for Language Courses Platform
--- =============================================
-
--- ================
--- USERS & ROLES
--- ================
-
 CREATE TABLE users (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) NOT NULL UNIQUE,
@@ -50,9 +41,6 @@ create table languages (
     name VARCHAR(15) NOT NULL UNIQUE
 );
 
--- ================
--- LEVELS (CEFR + Custom)
--- ================
 create table levels (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(20) NOT NULL UNIQUE

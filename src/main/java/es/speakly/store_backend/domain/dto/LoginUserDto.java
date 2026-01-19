@@ -6,8 +6,8 @@ import jakarta.validation.constraints.NotNull;
 
 public record LoginUserDto(
         Long id,
-        @NotBlank(message = "Email cannot be null or empty")
-        String email,
+        @NotBlank(message = "Username cannot be null or empty")
+        String username,
         @NotNull
         UserRole role
 ) {
