@@ -45,7 +45,7 @@ public class UserServiceImplTest {
                 null,
                 "Spanish",
                 "Beginner",
-                1L,
+                new UserDto(1L, null, null, null, null, null, List.of(), null),
                 10,
                 LocalDateTime.now()
         );
@@ -182,7 +182,7 @@ public class UserServiceImplTest {
     @Test
     void createUser_invalidCourseId_shouldThrowException() {
         CourseDto invalidCourse = new CourseDto(
-                null, "T", "D", null, "L", "L", 1L, 10, LocalDateTime.now()
+                null, "T", "D", null, "L", "L", new UserDto(1L, null, null, null, null, null, List.of(), null), 10, LocalDateTime.now()
         );
 
         UserDto user = new UserDto(

@@ -3,137 +3,107 @@ package es.speakly.store_backend.controller;
 import es.speakly.store_backend.annotations.Admin;
 import es.speakly.store_backend.controller.webmodel.request.CourseInsertRequest;
 import es.speakly.store_backend.controller.webmodel.request.CourseUpdateRequest;
-import es.speakly.store_backend.controller.webmodel.response.*;
+import es.speakly.store_backend.controller.webmodel.response.CourseDetailWithTeacherResponse;
+import es.speakly.store_backend.controller.webmodel.response.UserSummaryResponse;
 import es.speakly.store_backend.domain.dto.CourseDto;
-import es.speakly.store_backend.domain.dto.UserDto;
+import es.speakly.store_backend.domain.dto.CourseFiltersDto;
 import es.speakly.store_backend.domain.model.Page;
-import es.speakly.store_backend.domain.model.User;
 import es.speakly.store_backend.domain.service.CourseService;
-import es.speakly.store_backend.domain.service.UserService;
 import es.speakly.store_backend.exceptions.BusinessException;
-import es.speakly.store_backend.exceptions.DtoValidator;
 import es.speakly.store_backend.mappers.CourseMapper;
-import es.speakly.store_backend.mappers.UserMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("api/speakly/courses")
 public class CourseController {
     private final CourseService courseService;
-    private final UserService userService;
-    public CourseController(CourseService courseService, UserService userService) {
+
+    public CourseController(CourseService courseService) {
         this.courseService = courseService;
-        this.userService = userService;
     }
 
     @GetMapping
-    public ResponseEntity<Page<CourseDetailResponse>> findAllCourses(
+    public ResponseEntity<Page<CourseDetailWithTeacherResponse>> findAllCourses(
             @RequestParam(required = false, defaultValue = "1") int pageNumber,
-            @RequestParam(required = false, defaultValue = "10") int pageSize) {
-        Page<CourseDto> coursesDtoPage = courseService.getAll(pageNumber, pageSize);
+            @RequestParam(required = false, defaultValue = "10") int pageSize,
+            @RequestParam(required = false) String language,
+            @RequestParam(required = false) String level,
+            @RequestParam(required = false) Integer maxPrice,
+            @RequestParam(required = false) Integer minPrice,
+            @RequestParam(required = false) String sortBy
+    ) {
 
-        List<CourseDetailResponse> courseDetailResponses = coursesDtoPage.data().stream()
-                .map(CourseMapper::fromCourseDtoToCourseDetailResponse).toList();
+        CourseFiltersDto filters = new CourseFiltersDto(language, level, minPrice, maxPrice, sortBy);
+        Page<CourseDto> coursesPage = courseService.getAll(pageNumber, pageSize, filters);
 
-        Page<CourseDetailResponse> courseDetailResponsePage = new Page<>(
-                courseDetailResponses,
-                coursesDtoPage.pageNumber(),
-                coursesDtoPage.pageSize(),
-                coursesDtoPage.totalElements()
+        var mapped = coursesPage.data().stream().map(courseDto -> {
+            UserSummaryResponse teacher = null;
+            if (courseDto.teacher() != null) {
+                teacher = new UserSummaryResponse(
+                        courseDto.teacher().username(),
+                        courseDto.teacher().email(),
+                        courseDto.teacher().profilePictureUrl()
+                );
+            }
+            return new CourseDetailWithTeacherResponse(
+                    courseDto.id(),
+                    courseDto.title(),
+                    courseDto.description(),
+                    courseDto.price(),
+                    courseDto.language(),
+                    courseDto.level(),
+                    teacher,
+                    courseDto.duration(),
+                    courseDto.createdAt()
+            );
+        }).toList();
+
+        Page<CourseDetailWithTeacherResponse> responsePage = new Page<>(
+                mapped,
+                coursesPage.pageNumber(),
+                coursesPage.pageSize(),
+                coursesPage.totalElements(),
+                coursesPage.totalPages()
         );
-        return new ResponseEntity<>(courseDetailResponsePage, HttpStatus.OK);
+
+        return ResponseEntity.ok(responsePage);
     }
-
-    @GetMapping("/with-teachers")
-    public ResponseEntity<Page<CourseDetailWithTeacherResponse>> findAllCoursesAndTheirTeachers(
-            @RequestParam(required = false, defaultValue = "1") int pageNumber,
-            @RequestParam(required = false, defaultValue = "100") int pageSize) {
-        Page<CourseDto> coursesDtoPage = courseService.getAll(pageNumber, pageSize);
-
-        List<CourseDetailWithTeacherResponse> courseDetailResponses = coursesDtoPage.data().stream()
-                .map(courseDto -> {
-                    UserDto teacherDto = null;
-                    if (courseDto.teacherId() != null) {
-                        try {
-                            teacherDto = userService.getById(courseDto.teacherId());
-                        } catch (Exception e) {
-                            teacherDto = null;
-                        }
-                    }
-                    UserDetailResponse teacherDetail = UserMapper.fromUserDtoToUserDetailResponse(teacherDto);
-                    return CourseMapper.fromCourseDtoToCourseDetailWithTeacherResponse(courseDto, teacherDetail);
-                })
-                .toList();
-
-        Page<CourseDetailWithTeacherResponse> courseDetailResponsePage = new Page<>(
-                courseDetailResponses,
-                coursesDtoPage.pageNumber(),
-                coursesDtoPage.pageSize(),
-                coursesDtoPage.totalElements()
-        );
-        return new ResponseEntity<>(courseDetailResponsePage, HttpStatus.OK);
-    }
-
 
     @GetMapping("/{id}")
-    public ResponseEntity<CourseDetailResponse> findCourseById(@PathVariable Long id) {
-        CourseDetailResponse courseDetailResponse = CourseMapper.fromCourseDtoToCourseDetailResponse(
-                courseService.getById(id));
-        return new ResponseEntity<>(courseDetailResponse, HttpStatus.OK);
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<Page<CourseSummaryResponse>> findCoursesByLanguageAndLevel(
-            @RequestParam String language,
-            @RequestParam String level,
-            @RequestParam(required = false, defaultValue = "1") int pageNumber,
-            @RequestParam(required = false, defaultValue = "10") int pageSize) {
-        Page<CourseDto> coursesDtoPage = courseService.getByLanguageAndLevel(language, level, pageNumber, pageSize);
-
-        List<CourseSummaryResponse> courseSummaryResponses = coursesDtoPage.data().stream()
-                .map(CourseMapper::fromCourseDtoToCourseSummaryResponse).toList();
-
-        Page<CourseSummaryResponse> courseSummaryResponsePage = new Page<>(
-                courseSummaryResponses,
-                coursesDtoPage.pageNumber(),
-                coursesDtoPage.pageSize(),
-                coursesDtoPage.totalElements()
-        );
-        return new ResponseEntity<>(courseSummaryResponsePage, HttpStatus.OK);
+    public ResponseEntity<CourseDto> findCourseById(@PathVariable Long id) {
+        CourseDto courseDto = courseService.getById(id);
+        return ResponseEntity.ok(courseDto);
     }
 
     @Admin
     @PostMapping
-    public ResponseEntity<CourseDetailResponse> createCourse(@RequestBody CourseInsertRequest courseInsertRequest) {
-        CourseDto courseDto = CourseMapper.fromCourseInsertRequestToCourseDto(courseInsertRequest);
-        DtoValidator.validate(courseDto);
-        CourseDto createdCourseDto = courseService.createCourse(courseDto);
-        CourseDetailResponse courseDetailResponse = CourseMapper.fromCourseDtoToCourseDetailResponse(createdCourseDto);
-        return new ResponseEntity<>(courseDetailResponse, HttpStatus.CREATED);
+    public ResponseEntity<CourseDto> createCourse(@RequestBody CourseInsertRequest request) {
+        CourseDto courseDto = CourseMapper.fromCourseInsertRequestToCourseDto(request);
+        CourseDto createdCourse = courseService.createCourse(courseDto);
+        return new ResponseEntity<>(createdCourse, HttpStatus.CREATED);
     }
 
     @Admin
     @PutMapping("/{id}")
-    public ResponseEntity<CourseDetailResponse> updateCourse(
-            @PathVariable("id") Long id,
-            @RequestBody CourseUpdateRequest courseUpdateRequest) {
-        if (!id.equals(courseUpdateRequest.id())) {
+    public ResponseEntity<CourseDto> updateCourse(
+            @PathVariable Long id,
+            @RequestBody CourseUpdateRequest request) {
+
+        if (!id.equals(request.id())) {
             throw new BusinessException("ID in path and request body must match");
         }
-        CourseDto courseDto = CourseMapper.fromCourseUpdateRequestToCourseDto(courseUpdateRequest);
-        DtoValidator.validate(courseDto);
-        CourseDto updatedCourseDto = courseService.updateCourse(courseDto);
-        CourseDetailResponse courseDetailResponse = CourseMapper.fromCourseDtoToCourseDetailResponse(updatedCourseDto);
-        return new ResponseEntity<>(courseDetailResponse, HttpStatus.OK);
+
+        CourseDto courseDto = CourseMapper.fromCourseUpdateRequestToCourseDto(request);
+        CourseDto updatedCourse = courseService.updateCourse(courseDto);
+
+        return ResponseEntity.ok(updatedCourse);
     }
 
     @Admin
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCourse(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
         courseService.delete(id);
         return ResponseEntity.noContent().build();
     }

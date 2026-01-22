@@ -1,5 +1,7 @@
 package es.speakly.store_backend.domain.dto;
 
+import es.speakly.store_backend.domain.dto.UserDto;
+import es.speakly.store_backend.domain.model.UserRole;
 import es.speakly.store_backend.exceptions.DtoValidator;
 import es.speakly.store_backend.exceptions.ValidationException;
 import jakarta.validation.ConstraintViolation;
@@ -45,11 +47,10 @@ public class CourseDtoTest {
                 price,
                 language,
                 level,
-                1L,
+                new UserDto(1L, null, null, null, null, null, java.util.List.of(), UserRole.USER),
                 10,
                 LocalDateTime.now()
         );
         assertThrows(ValidationException.class, () -> DtoValidator.validate(courseDto));
     }
 }
-

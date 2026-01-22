@@ -40,8 +40,7 @@ public class UserMapper {
         return new UserSummaryResponse(
             userDto.username(),
             userDto.email(),
-            userDto.profilePictureUrl(),
-            userDto.createdAt()
+            userDto.profilePictureUrl()
         );
     }
 

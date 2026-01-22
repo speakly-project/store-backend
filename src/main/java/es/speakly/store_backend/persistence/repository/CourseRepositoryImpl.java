@@ -1,6 +1,7 @@
 package es.speakly.store_backend.persistence.repository;
 
 import es.speakly.store_backend.domain.dto.CourseDto;
+import es.speakly.store_backend.domain.dto.CourseFiltersDto;
 import es.speakly.store_backend.domain.model.Page;
 import es.speakly.store_backend.domain.repository.CourseRepository;
 import es.speakly.store_backend.mappers.CourseMapper;
@@ -18,13 +19,16 @@ public class CourseRepositoryImpl implements CourseRepository {
     }
 
     @Override
+    public Page<CourseDto> findAllWithFilters(int pageNumber, int pageSize, CourseFiltersDto filters) {
+        List<CourseJpaEntity> entities = courseDao.findAllWithFilters(pageNumber, pageSize, filters);
+        List<CourseDto> dtos = mapToDtos(entities);
+        long totalElements = courseDao.countWithFilters(filters);
+        return new Page<>(dtos, pageNumber, pageSize, totalElements);
+    }
+
+    @Override
     public Page<CourseDto> findAll(int pageNumber, int pageSize) {
-        List<CourseJpaEntity> entities = courseDao.findAll(pageNumber, pageSize);
-        List<CourseDto> courseDtos = entities.stream()
-                .map(CourseMapper::fromCourseEntityToCourseDto)
-                .toList();
-        long totalElements = courseDao.count();
-        return new Page<>(courseDtos, pageNumber, pageSize, totalElements);
+        return findAllWithFilters(pageNumber, pageSize, null);
     }
 
     @Override
@@ -40,27 +44,20 @@ public class CourseRepositoryImpl implements CourseRepository {
     }
 
     @Override
-    public Page<CourseDto> findByLanguageAndLevel(String language, String level, int pageNumber, int pageSize) {
-        List<CourseJpaEntity> entities = courseDao.findByLanguageAndLevel(language, level, pageNumber, pageSize);
-        List<CourseDto> courseDtos = entities.stream()
-                .map(CourseMapper::fromCourseEntityToCourseDto)
-                .toList();
-        long totalElements = entities.size();
-        return new Page<>(courseDtos, pageNumber, pageSize, totalElements);
-    }
-
-    @Override
     public CourseDto save(CourseDto course) {
         CourseJpaEntity entity = CourseMapper.fromCourseDtoToCourseEntity(course);
-        if (course.id() == null) {
-            return CourseMapper.fromCourseEntityToCourseDto(courseDao.insert(entity));
-        }
-        return CourseMapper.fromCourseEntityToCourseDto(courseDao.update(entity));
-
+        CourseJpaEntity saved = courseDao.save(entity);
+        return CourseMapper.fromCourseEntityToCourseDto(saved);
     }
 
     @Override
     public void delete(Long id) {
         courseDao.deleteById(id);
+    }
+
+    private List<CourseDto> mapToDtos(List<CourseJpaEntity> entities) {
+        return entities.stream()
+                .map(CourseMapper::fromCourseEntityToCourseDto)
+                .toList();
     }
 }

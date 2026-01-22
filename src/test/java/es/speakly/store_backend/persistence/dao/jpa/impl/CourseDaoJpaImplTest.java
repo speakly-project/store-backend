@@ -1,5 +1,6 @@
 package es.speakly.store_backend.persistence.dao.jpa.impl;
 
+import es.speakly.store_backend.domain.dto.CourseFiltersDto;
 import es.speakly.store_backend.domain.model.UserRole;
 import es.speakly.store_backend.persistence.dao.impl.CourseDaoJpaImpl;
 import es.speakly.store_backend.persistence.dao.impl.entity.CourseJpaEntity;
@@ -36,6 +37,11 @@ public class CourseDaoJpaImplTest {
 
     @BeforeEach
     void setUp() {
+        entityManager.createQuery("DELETE FROM CourseJpaEntity").executeUpdate();
+        entityManager.createQuery("DELETE FROM UserJpaEntity").executeUpdate();
+        entityManager.flush();
+        entityManager.clear();
+
         teacher = new UserJpaEntity(
                 null,
                 "teacher1",
@@ -107,8 +113,8 @@ public class CourseDaoJpaImplTest {
                 () -> assertEquals(course1.getLevel(), result.get().getLevel()),
                 () -> assertEquals(course1.getDuration(), result.get().getDuration()),
                 () -> assertNotNull(result.get().getCreatedAt()),
-                () -> assertNotNull(result.get().getUser()),
-                () -> assertEquals(teacher.getId(), result.get().getUser().getId())
+                () -> assertNotNull(result.get().getTeacher()),
+                () -> assertEquals(teacher.getId(), result.get().getTeacher().getId())
         );
     }
 
@@ -146,38 +152,211 @@ public class CourseDaoJpaImplTest {
     }
 
     @Test
-    void findByLanguageAndLevel_shouldReturnPage() {
-        List<CourseJpaEntity> page1 = courseDao.findByLanguageAndLevel("Spanish", "A1", 1, 1);
-        List<CourseJpaEntity> page2 = courseDao.findByLanguageAndLevel("Spanish", "A1", 2, 1);
+    void findAll_withPagination_returnsCorrectPage() {
+        List<CourseJpaEntity> page1 = courseDao.findAll(1, 2);
+        List<CourseJpaEntity> page2 = courseDao.findAll(2, 2);
 
         assertAll(
                 () -> assertNotNull(page1),
                 () -> assertNotNull(page2),
-                () -> assertEquals(1, page1.size()),
-                () -> assertEquals(1, page2.size()),
-                () -> assertEquals("Spanish", page1.getFirst().getLanguage()),
-                () -> assertEquals("A1", page1.getFirst().getLevel()),
-                () -> assertEquals("Spanish", page2.getFirst().getLanguage()),
-                () -> assertEquals("A1", page2.getFirst().getLevel()),
-                () -> assertNotEquals(page1.getFirst().getId(), page2.getFirst().getId())
+                () -> assertEquals(2, page1.size()),
+                () -> assertEquals(1, page2.size()), // Solo queda 1 elemento en página 2
+                () -> assertNotEquals(page1.get(0).getId(), page2.get(0).getId())
         );
     }
 
     @Test
-    void findAll_withPageNumberLessThan1_shouldReturn1() {
-        List<CourseJpaEntity> page0 = courseDao.findByLanguageAndLevel("Spanish", "A1", 0, 10);
-        List<CourseJpaEntity> page1 = courseDao.findByLanguageAndLevel("Spanish", "A1", 1, 10);
-
+    void findAll_withPageNumberLessThan1_shouldReturnFirstPage() {
+        List<CourseJpaEntity> page0 = courseDao.findAll(0, 10);
+        List<CourseJpaEntity> page1 = courseDao.findAll(1, 10);
 
         assertAll(
                 () -> assertNotNull(page0),
                 () -> assertNotNull(page1),
-                () -> assertEquals(page1.size(), page0.size())
+                () -> assertEquals(page1.size(), page0.size()),
+                () -> assertEquals(3, page0.size())
         );
     }
 
     @Test
-    void insert_validCourse_success() {
+    void findAllWithFilters_noFilters_returnsAll() {
+        List<CourseJpaEntity> results = courseDao.findAllWithFilters(1, 10, null);
+
+        assertAll(
+                () -> assertNotNull(results),
+                () -> assertEquals(3, results.size())
+        );
+    }
+
+    @Test
+    void findAllWithFilters_byLanguage_returnsFiltered() {
+        CourseFiltersDto filters = new CourseFiltersDto("Spanish", null, null, null, null);
+        List<CourseJpaEntity> results = courseDao.findAllWithFilters(1, 10, filters);
+
+        assertAll(
+                () -> assertNotNull(results),
+                () -> assertEquals(2, results.size()),
+                () -> assertTrue(results.stream().allMatch(c -> "Spanish".equals(c.getLanguage())))
+        );
+    }
+
+    @Test
+    void findAllWithFilters_byLevel_returnsFiltered() {
+        CourseFiltersDto filters = new CourseFiltersDto(null, "A1", null, null, null);
+        List<CourseJpaEntity> results = courseDao.findAllWithFilters(1, 10, filters);
+
+        assertAll(
+                () -> assertNotNull(results),
+                () -> assertEquals(2, results.size()),
+                () -> assertTrue(results.stream().allMatch(c -> "A1".equals(c.getLevel())))
+        );
+    }
+
+    @Test
+    void findAllWithFilters_byLanguageAndLevel_returnsFiltered() {
+        CourseFiltersDto filters = new CourseFiltersDto("Spanish", "A1", null, null, null);
+        List<CourseJpaEntity> results = courseDao.findAllWithFilters(1, 10, filters);
+
+        assertAll(
+                () -> assertNotNull(results),
+                () -> assertEquals(2, results.size()),
+                () -> assertTrue(results.stream().allMatch(c ->
+                        "Spanish".equals(c.getLanguage()) && "A1".equals(c.getLevel())))
+        );
+    }
+
+    @Test
+    void findAllWithFilters_byMinPrice_returnsFiltered() {
+        CourseFiltersDto filters = new CourseFiltersDto(null, null, 15, null, null);
+        List<CourseJpaEntity> results = courseDao.findAllWithFilters(1, 10, filters);
+
+        assertAll(
+                () -> assertNotNull(results),
+                () -> assertEquals(2, results.size()),
+                () -> assertTrue(results.stream().allMatch(c ->
+                        c.getPrice().compareTo(new BigDecimal("15")) >= 0))
+        );
+    }
+
+    @Test
+    void findAllWithFilters_byMaxPrice_returnsFiltered() {
+        CourseFiltersDto filters = new CourseFiltersDto(null, null, null, 25, null);
+        List<CourseJpaEntity> results = courseDao.findAllWithFilters(1, 10, filters);
+
+        assertAll(
+                () -> assertNotNull(results),
+                () -> assertEquals(2, results.size()),
+                () -> assertTrue(results.stream().allMatch(c ->
+                        c.getPrice().compareTo(new BigDecimal("25")) <= 0))
+        );
+    }
+
+    @Test
+    void findAllWithFilters_byPriceRange_returnsFiltered() {
+        CourseFiltersDto filters = new CourseFiltersDto(null, null, 15, 25, null);
+        List<CourseJpaEntity> results = courseDao.findAllWithFilters(1, 10, filters);
+
+        assertAll(
+                () -> assertNotNull(results),
+                () -> assertEquals(1, results.size()),
+                () -> assertEquals(course2.getId(), results.get(0).getId())
+        );
+    }
+
+    @Test
+    void findAllWithFilters_combinedFilters_returnsFiltered() {
+        CourseFiltersDto filters = new CourseFiltersDto("Spanish", "A1", 5, 25, null);
+        List<CourseJpaEntity> results = courseDao.findAllWithFilters(1, 10, filters);
+
+        assertAll(
+                () -> assertNotNull(results),
+                () -> assertEquals(2, results.size()),
+                () -> assertTrue(results.stream().allMatch(c ->
+                        "Spanish".equals(c.getLanguage()) &&
+                                "A1".equals(c.getLevel()) &&
+                                c.getPrice().compareTo(new BigDecimal("5")) >= 0 &&
+                                c.getPrice().compareTo(new BigDecimal("25")) <= 0))
+        );
+    }
+
+    @Test
+    void findAllWithFilters_noMatchingResults_returnsEmpty() {
+        CourseFiltersDto filters = new CourseFiltersDto("German", null, null, null, null);
+        List<CourseJpaEntity> results = courseDao.findAllWithFilters(1, 10, filters);
+
+        assertAll(
+                () -> assertNotNull(results),
+                () -> assertTrue(results.isEmpty())
+        );
+    }
+
+    // ===============================
+    // TESTS DE count y countWithFilters
+    // ===============================
+
+    @Test
+    void count_returnsCorrectValue() {
+        long total = courseDao.count();
+
+        assertAll(
+                () -> assertEquals(3L, total)
+        );
+    }
+
+    @Test
+    void countWithFilters_noFilters_returnsTotal() {
+        long total = courseDao.countWithFilters(null);
+
+        assertAll(
+                () -> assertEquals(3L, total)
+        );
+    }
+
+    @Test
+    void countWithFilters_byLanguage_returnsFiltered() {
+        CourseFiltersDto filters = new CourseFiltersDto("Spanish", null, null, null, null);
+        long total = courseDao.countWithFilters(filters);
+
+        assertAll(
+                () -> assertEquals(2L, total)
+        );
+    }
+
+    @Test
+    void countWithFilters_byPriceRange_returnsFiltered() {
+        CourseFiltersDto filters = new CourseFiltersDto(null, null, 15, 25, null);
+        long total = courseDao.countWithFilters(filters);
+
+        assertAll(
+                () -> assertEquals(1L, total)
+        );
+    }
+
+    @Test
+    void countWithFilters_combinedFilters_returnsFiltered() {
+        CourseFiltersDto filters = new CourseFiltersDto("Spanish", "A1", 5, 25, null);
+        long total = courseDao.countWithFilters(filters);
+
+        assertAll(
+                () -> assertEquals(2L, total)
+        );
+    }
+
+    @Test
+    void countWithFilters_noMatchingResults_returnsZero() {
+        CourseFiltersDto filters = new CourseFiltersDto("German", null, null, null, null);
+        long total = courseDao.countWithFilters(filters);
+
+        assertAll(
+                () -> assertEquals(0L, total)
+        );
+    }
+
+    // TESTS DE save (INSERT y UPDATE)
+
+
+    @Test
+    void save_newCourse_insertsSuccessfully() {
         CourseJpaEntity newCourse = new CourseJpaEntity(
                 null,
                 "Course D",
@@ -190,7 +369,7 @@ public class CourseDaoJpaImplTest {
         );
         newCourse.setCreatedAt(LocalDateTime.now());
 
-        CourseJpaEntity saved = courseDao.insert(newCourse);
+        CourseJpaEntity saved = courseDao.save(newCourse);
         entityManager.flush();
         entityManager.clear();
 
@@ -200,19 +379,23 @@ public class CourseDaoJpaImplTest {
                 () -> assertNotNull(saved.getId()),
                 () -> assertNotNull(fromDb),
                 () -> assertEquals("Course D", fromDb.getTitle()),
+                () -> assertEquals(new BigDecimal("40.00"), fromDb.getPrice()),
+                () -> assertEquals("German", fromDb.getLanguage()),
+                () -> assertEquals("A2", fromDb.getLevel()),
                 () -> assertNotNull(fromDb.getCreatedAt()),
-                () -> assertNotNull(fromDb.getUser()),
-                () -> assertEquals(teacher.getId(), fromDb.getUser().getId())
+                () -> assertNotNull(fromDb.getTeacher()),
+                () -> assertEquals(teacher.getId(), fromDb.getTeacher().getId())
         );
     }
 
     @Test
-    void update_existingCourse_success() {
+    void save_existingCourse_updatesSuccessfully() {
         CourseJpaEntity existing = entityManager.find(CourseJpaEntity.class, course1.getId());
         existing.setTitle("Course A Updated");
         existing.setDuration(99);
+        existing.setPrice(new BigDecimal("999.99"));
 
-        CourseJpaEntity updated = courseDao.update(existing);
+        CourseJpaEntity updated = courseDao.save(existing);
         entityManager.flush();
         entityManager.clear();
 
@@ -224,31 +407,13 @@ public class CourseDaoJpaImplTest {
                 () -> assertNotNull(fromDb),
                 () -> assertEquals("Course A Updated", fromDb.getTitle()),
                 () -> assertEquals(99, fromDb.getDuration()),
+                () -> assertEquals(new BigDecimal("999.99"), fromDb.getPrice()),
                 () -> assertNotNull(fromDb.getCreatedAt())
         );
     }
 
     @Test
-    void update_notFound_throwsException() {
-        CourseJpaEntity fake = new CourseJpaEntity(
-                999999L,
-                "Fake",
-                "Fake",
-                new BigDecimal("1.00"),
-                "Spanish",
-                "A1",
-                1,
-                teacher
-        );
-        fake.setCreatedAt(LocalDateTime.now());
-
-        assertAll(
-                () -> assertThrows(RuntimeException.class, () -> courseDao.update(fake))
-        );
-    }
-
-    @Test
-    void deleteById_existingCourse_deletes() {
+    void deleteById_existingCourse_deletesSuccessfully() {
         Long id = course3.getId();
 
         courseDao.deleteById(id);
@@ -263,11 +428,9 @@ public class CourseDaoJpaImplTest {
     }
 
     @Test
-    void count_returnsCorrectValue() {
-        long total = courseDao.count();
-
+    void deleteById_nonExistingCourse_doesNotThrowException() {
         assertAll(
-                () -> assertEquals(73L, total)
+                () -> assertDoesNotThrow(() -> courseDao.deleteById(999999L))
         );
     }
 }

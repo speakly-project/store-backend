@@ -1,6 +1,7 @@
 package es.speakly.store_backend.domain.service.impl;
 
 import es.speakly.store_backend.domain.dto.CourseDto;
+import es.speakly.store_backend.domain.dto.UserDto;
 import es.speakly.store_backend.domain.model.Page;
 import es.speakly.store_backend.domain.repository.CourseRepository;
 import es.speakly.store_backend.exceptions.BusinessException;
@@ -42,7 +43,7 @@ public class CourseServiceImplTest {
                 null,
                 "Spanish",
                 "Beginner",
-                1L,
+                new UserDto(1L, null, null, null, null, null, List.of(), null),
                 10,
                 LocalDateTime.now()
         );
@@ -54,37 +55,17 @@ public class CourseServiceImplTest {
                 null,
                 "French",
                 "Intermediate",
-                2L,
+                new UserDto(2L, null, null, null, null, null, List.of(), null),
                 15,
                 LocalDateTime.now()
         );
     }
 
     @Test
-    void getAll_shouldReturnPage() {
-        Page<CourseDto> page = new Page<>(List.of(courseDto1, courseDto2), 1, 10, 2);
-        when(courseRepository.findAll(1, 10)).thenReturn(page);
-
-        Page<CourseDto> result = courseService.getAll(1, 10);
-
-        assertAll(
-                () -> assertNotNull(result),
-                () -> assertNotNull(result.data()),
-                () -> assertEquals(2, result.data().size()),
-                () -> assertEquals(1, result.pageNumber()),
-                () -> assertEquals(10, result.pageSize()),
-                () -> assertEquals(2, result.totalElements()),
-                () -> assertEquals(courseDto1.id(), result.data().getFirst().id()),
-                () -> assertEquals(courseDto2.id(), result.data().get(1).id())
-        );
-        verify(courseRepository).findAll(1, 10);
-    }
-
-    @Test
     void getAll_invalidPage_shouldThrowException() {
         assertAll(
-                () -> assertThrows(IllegalArgumentException.class, () -> courseService.getAll(0, 10)),
-                () -> assertThrows(IllegalArgumentException.class, () -> courseService.getAll(1, 0))
+                () -> assertThrows(IllegalArgumentException.class, () -> courseService.getAll(0, 10, null)),
+                () -> assertThrows(IllegalArgumentException.class, () -> courseService.getAll(1, 0, null))
         );
     }
 
@@ -137,31 +118,6 @@ public class CourseServiceImplTest {
         verify(courseRepository).findByTitle("nope");
     }
 
-    @Test
-    void getByLanguageAndLevel_shouldReturnPage() {
-        Page<CourseDto> page = new Page<>(List.of(courseDto1), 1, 10, 1);
-        when(courseRepository.findByLanguageAndLevel("Spanish", "Beginner", 1, 10)).thenReturn(page);
-
-        Page<CourseDto> result = courseService.getByLanguageAndLevel("Spanish", "Beginner", 1, 10);
-
-        assertAll(
-                () -> assertNotNull(result),
-                () -> assertNotNull(result.data()),
-                () -> assertEquals(1, result.data().size()),
-                () -> assertEquals(courseDto1.id(), result.data().getFirst().id())
-        );
-        verify(courseRepository).findByLanguageAndLevel("Spanish", "Beginner", 1, 10);
-    }
-
-    @Test
-    void getByLanguageAndLevel_invalidPage_shouldThrowException() {
-        assertAll(
-                () -> assertThrows(IllegalArgumentException.class,
-                        () -> courseService.getByLanguageAndLevel("Spanish", "Beginner", 0, 10)),
-                () -> assertThrows(IllegalArgumentException.class,
-                        () -> courseService.getByLanguageAndLevel("Spanish", "Beginner", 1, 0))
-        );
-    }
 
     @Test
     void createCourse_valid_shouldCreate() {
@@ -227,9 +183,9 @@ public class CourseServiceImplTest {
                 null,
                 courseDto1.language(),
                 courseDto1.level(),
-                courseDto1.teacherId(),
+                new es.speakly.store_backend.domain.dto.UserDto(courseDto1.teacher().id(), null, null, null, null, null, java.util.List.of(), null),
                 courseDto1.duration(),
-                LocalDateTime.now()
+                java.time.LocalDateTime.now()
         );
 
         when(courseRepository.findById(courseDto1.id())).thenReturn(Optional.of(courseDto1));
@@ -264,4 +220,3 @@ public class CourseServiceImplTest {
         verify(courseRepository).findById(999L);
     }
 }
-

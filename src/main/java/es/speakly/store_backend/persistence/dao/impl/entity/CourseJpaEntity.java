@@ -25,12 +25,10 @@ public class CourseJpaEntity implements Serializable {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    // ManyToOne: The instructor/creator of the course
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private UserJpaEntity user;
+    private UserJpaEntity teacher;
 
-    // ManyToMany: Students who have enrolled/taken this course
     @ManyToMany(mappedBy = "coursesTaken")
     private List<UserJpaEntity> students = new ArrayList<>();
 
@@ -45,7 +43,7 @@ public class CourseJpaEntity implements Serializable {
         this.language = language;
         this.level = level;
         this.duration = duration;
-        this.user = user;
+        this.teacher = user;
     }
 
     public Long getId() {
@@ -112,12 +110,12 @@ public class CourseJpaEntity implements Serializable {
         this.createdAt = createdAt;
     }
 
-    public UserJpaEntity getUser() {
-        return user;
+    public UserJpaEntity getTeacher() {
+        return teacher;
     }
 
-    public void setUser(UserJpaEntity user) {
-        this.user = user;
+    public void setTeacher(UserJpaEntity teacher) {
+        this.teacher = teacher;
     }
 
     public List<UserJpaEntity> getStudents() {

@@ -19,7 +19,7 @@ public record CourseDto(
         String language,
         @NotBlank(message = "Level cannot be null or empty")
         String level,
-        Long teacherId,
+        UserDto teacher,
         @NotNull
         int duration,
         LocalDateTime createdAt
