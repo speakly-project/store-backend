@@ -1,7 +1,9 @@
 package es.speakly.store_backend.mappers;
 
 import es.speakly.store_backend.controller.webmodel.request.UserInsertRequest;
+import es.speakly.store_backend.controller.webmodel.request.UserUpdateNotAdminRequest;
 import es.speakly.store_backend.controller.webmodel.request.UserUpdateRequest;
+import es.speakly.store_backend.controller.webmodel.response.UserDetailNotAdminResponse;
 import es.speakly.store_backend.controller.webmodel.response.UserDetailResponse;
 import es.speakly.store_backend.controller.webmodel.response.UserSummaryResponse;
 import es.speakly.store_backend.domain.dto.CourseDto;
@@ -181,6 +183,38 @@ public class UserMapper {
                             .map(CourseMapper::fromCourseDtoToCourse)
                             .toList() : Collections.emptyList(),
             userDto.role()
+        );
+    }
+
+    public static UserDto fromUserUpdateNotAdminRequestToUserDto(UserUpdateNotAdminRequest userUpdateNotAdminRequest) {
+        if (userUpdateNotAdminRequest == null) {
+            return null;
+        }
+        return new UserDto(
+            userUpdateNotAdminRequest.id(),
+            userUpdateNotAdminRequest.username(),
+            userUpdateNotAdminRequest.email(),
+            userUpdateNotAdminRequest.profilePictureUrl(),
+            null,
+            userUpdateNotAdminRequest.createAt(),
+            userUpdateNotAdminRequest.coursesIds() != null ?
+                    Arrays.stream(userUpdateNotAdminRequest.coursesIds())
+                            .map(id -> new CourseDto(id, null, null, null, null, null, null, 0, null))
+                            .toList() : Collections.emptyList(),
+            USER
+        );
+    }
+
+    public static UserDetailNotAdminResponse fromUserDtoToUserDetailNotAdminResponse(UserDto userDto) {
+        if (userDto == null) {
+            return null;
+        }
+        return new UserDetailNotAdminResponse(
+            userDto.id(),
+            userDto.username(),
+            userDto.email(),
+            userDto.profilePictureUrl(),
+            userDto.createdAt()
         );
     }
 

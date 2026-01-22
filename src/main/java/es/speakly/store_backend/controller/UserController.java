@@ -2,8 +2,11 @@ package es.speakly.store_backend.controller;
 
 
 import es.speakly.store_backend.annotations.Admin;
+import es.speakly.store_backend.annotations.Authenticated;
 import es.speakly.store_backend.controller.webmodel.request.UserInsertRequest;
+import es.speakly.store_backend.controller.webmodel.request.UserUpdateNotAdminRequest;
 import es.speakly.store_backend.controller.webmodel.request.UserUpdateRequest;
+import es.speakly.store_backend.controller.webmodel.response.UserDetailNotAdminResponse;
 import es.speakly.store_backend.controller.webmodel.response.UserDetailResponse;
 import es.speakly.store_backend.controller.webmodel.response.UserDetailResponse;
 import es.speakly.store_backend.domain.dto.UserDto;
@@ -81,6 +84,16 @@ public class UserController {
         DtoValidator.validate(userDto);
         UserDto updatedUserDto = userService.updateUser(userDto);
         UserDetailResponse userDetailResponse = UserMapper.fromUserDtoToUserDetailResponse(updatedUserDto);
+        return new ResponseEntity<>(userDetailResponse, HttpStatus.OK);
+    }
+
+    @Authenticated
+    @PutMapping("/me")
+    public ResponseEntity<UserDetailNotAdminResponse> updateUser(@RequestBody UserUpdateNotAdminRequest userUpdateNotAdmin){
+        UserDto userDto = UserMapper.fromUserUpdateNotAdminRequestToUserDto(userUpdateNotAdmin);
+        DtoValidator.validate(userDto);
+        UserDto updatedUserDto = userService.updateUser(userDto);
+        UserDetailNotAdminResponse userDetailResponse = UserMapper.fromUserDtoToUserDetailNotAdminResponse(updatedUserDto);
         return new ResponseEntity<>(userDetailResponse, HttpStatus.OK);
     }
 
