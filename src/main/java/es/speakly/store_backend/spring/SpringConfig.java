@@ -15,6 +15,7 @@ import es.speakly.store_backend.domain.service.impl.CourseServiceImpl;
 import es.speakly.store_backend.domain.service.impl.LanguageServiceImpl;
 import es.speakly.store_backend.domain.service.impl.LevelServiceImpl;
 import es.speakly.store_backend.domain.service.impl.UserServiceImpl;
+import es.speakly.store_backend.domain.usecase.PasswdUpdateUseCase;
 import es.speakly.store_backend.filters.AuthFilter;
 import es.speakly.store_backend.persistence.dao.AuthDao;
 import es.speakly.store_backend.persistence.dao.CourseDao;
@@ -31,6 +32,7 @@ import es.speakly.store_backend.persistence.repository.CourseRepositoryImpl;
 import es.speakly.store_backend.persistence.repository.LanguageRepositoryImpl;
 import es.speakly.store_backend.persistence.repository.LevelRepositoryImpl;
 import es.speakly.store_backend.persistence.repository.UserRepositoryImpl;
+import es.speakly.store_backend.usecase.PasswdUpdateUseCaseImpl;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -45,6 +47,11 @@ public class SpringConfig {
         registration.setFilter(new AuthFilter(authService));
         registration.addUrlPatterns("/*");
         return registration;
+    }
+
+    @Bean
+    public PasswdUpdateUseCase passwdUpdateUseCase(UserRepository userRepository) {
+        return new PasswdUpdateUseCaseImpl(userRepository);
     }
 
     @Bean

@@ -3,17 +3,22 @@ package es.speakly.store_backend.controller;
 
 import es.speakly.store_backend.annotations.Admin;
 import es.speakly.store_backend.annotations.Authenticated;
+import es.speakly.store_backend.controller.webmodel.request.PasswordUpdateRequest;
 import es.speakly.store_backend.controller.webmodel.request.UserInsertRequest;
 import es.speakly.store_backend.controller.webmodel.request.UserUpdateNotAdminRequest;
 import es.speakly.store_backend.controller.webmodel.request.UserUpdateRequest;
 import es.speakly.store_backend.controller.webmodel.response.UserDetailNotAdminResponse;
 import es.speakly.store_backend.controller.webmodel.response.UserDetailResponse;
 import es.speakly.store_backend.controller.webmodel.response.UserDetailResponse;
+import es.speakly.store_backend.domain.dto.LoginUserDto;
 import es.speakly.store_backend.domain.dto.UserDto;
 import es.speakly.store_backend.domain.model.Page;
 import es.speakly.store_backend.domain.service.UserService;
+import es.speakly.store_backend.domain.usecase.PasswdUpdateUseCase;
 import es.speakly.store_backend.exceptions.DtoValidator;
 import es.speakly.store_backend.mappers.UserMapper;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,14 +30,16 @@ import java.util.List;
 @RequestMapping("api/speakly/users")
 public class UserController {
     private final UserService userService;
+    private final PasswdUpdateUseCase passwdUpdateUseCase;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, PasswdUpdateUseCase passwdUpdateUseCase) {
         this.userService = userService;
+        this.passwdUpdateUseCase = passwdUpdateUseCase;
     }
 
     @GetMapping
     public ResponseEntity<Page<UserDetailResponse>> findAllUsers(@RequestParam(required = false, defaultValue = "1") int pageNumber,
-                                                                  @RequestParam(required = false, defaultValue = "10") int pageSize) {
+                                                                 @RequestParam(required = false, defaultValue = "10") int pageSize) {
         Page<UserDto> usersDtoPage = userService.getAll(pageNumber, pageSize);
 
         List<UserDetailResponse> userDetailResponses = usersDtoPage.data().stream()
@@ -76,7 +83,7 @@ public class UserController {
 
     @Admin
     @PutMapping("/{id}")
-    public ResponseEntity<UserDetailResponse> updateUser(@PathVariable("id") Long id, @RequestBody UserUpdateRequest userUpdateRequest){
+    public ResponseEntity<UserDetailResponse> updateUserAdmin(@PathVariable("id") Long id, @RequestBody UserUpdateRequest userUpdateRequest){
         if (!id.equals(userUpdateRequest.id())){
             throw new IllegalArgumentException("ID in path and request body must match");
         }
@@ -89,12 +96,20 @@ public class UserController {
 
     @Authenticated
     @PutMapping("/me")
-    public ResponseEntity<UserDetailNotAdminResponse> updateUser(@RequestBody UserUpdateNotAdminRequest userUpdateNotAdmin){
+    public ResponseEntity<UserDetailNotAdminResponse> updateMyUser(@RequestBody UserUpdateNotAdminRequest userUpdateNotAdmin){
         UserDto userDto = UserMapper.fromUserUpdateNotAdminRequestToUserDto(userUpdateNotAdmin);
         DtoValidator.validate(userDto);
         UserDto updatedUserDto = userService.updateUser(userDto);
         UserDetailNotAdminResponse userDetailResponse = UserMapper.fromUserDtoToUserDetailNotAdminResponse(updatedUserDto);
         return new ResponseEntity<>(userDetailResponse, HttpStatus.OK);
+    }
+
+    @Authenticated
+    @PutMapping("/passwd")
+    public ResponseEntity<Void> updateUserPassword(HttpServletRequest request, @RequestBody PasswordUpdateRequest passwordUpdateRequest){
+        LoginUserDto user = (LoginUserDto) request.getAttribute("user");
+        passwdUpdateUseCase.updatePassword(user.id(), passwordUpdateRequest.oldPassword(), passwordUpdateRequest.newPassword());
+        return ResponseEntity.noContent().build();
     }
 
     @Admin

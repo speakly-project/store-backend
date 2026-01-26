@@ -28,4 +28,18 @@ public record UserDto(
             coursesTaken = List.copyOf(coursesTaken);
         }
     }
+
+    public UserDto withPassword(String newPassword) {
+        return new UserDto(
+                id,
+                username,
+                email,
+                profilePictureUrl,
+                newPassword,
+                createdAt,
+                coursesTaken,
+                role
+        );
+    }
+
 }
