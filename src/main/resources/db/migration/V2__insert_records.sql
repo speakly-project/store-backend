@@ -3,7 +3,9 @@
 -- ================
 
 INSERT INTO users (username, email, profile_picture_url, encrypted_password, created_at, role) VALUES
-                                                                                             ('teacher_john', 'john@example.com', 'https://example.com/john.png', 'encrypted_pass_123', '2020-05-20', 'ADMIN'),
+                                                                                             ('admin', 'admin@example.com', 'https://example.com/admin.png', '$2a$12$NFPD3vCFkuXc9LdwHTQc5em92SLYqNrAG2tfjaNWYRtfJ/XkDQTKy', '2020-05-20', 'ADMIN'),
+                                                                                             ('teacher_john', 'john@example.com', 'https://example.com/john.png', '$2a$12$NFPD3vCFkuXc9LdwHTQc5em92SLYqNrAG2tfjaNWYRtfJ/XkDQTKy', '2020-05-20', 'ADMIN'),
+                                                                                             ('pepe', 'pepe@example.com', 'https://example.com/pepe.png', '$2a$12$NFPD3vCFkuXc9LdwHTQc5em92SLYqNrAG2tfjaNWYRtfJ/XkDQTKy', '2020-05-20', 'ADMIN'),
                                                                                              ('teacher_maria', 'maria@example.com', 'https://example.com/maria.png', 'encrypted_pass_456', '2020-07-30', 'ADMIN'),
                                                                                              ('student_anna', 'anna@example.com', NULL, 'encrypted_pass_789', '2021-07-29', 'USER'),
                                                                                              ('student_pedro', 'pedro@example.com', NULL, 'encrypted_pass_987', '2021-08-29','USER'),
@@ -15,8 +17,8 @@ INSERT INTO users (username, email, profile_picture_url, encrypted_password, cre
                                                                                              ('teacher_richard', 'richard@example.com', NULL, 'pass_006', '2022-02-05', 'ADMIN'),
 
 
-                                                                                             ('student_luis', 'luis@example.com', NULL, 'pass_007', '2022-02-10', 'USER'),
-                                                                                             ('student_marta', 'marta@example.com', NULL, 'pass_008', '2022-02-12', 'USER'),
+                                                                                             ('student_luis', 'luis@example.com', NULL, '$2a$12$NFPD3vCFkuXc9LdwHTQc5em92SLYqNrAG2tfjaNWYRtfJ/XkDQTKy', '2022-02-10', 'USER'),
+                                                                                             ('student_marta', 'marta@example.com', NULL, '$2a$12$NFPD3vCFkuXc9LdwHTQc5em92SLYqNrAG2tfjaNWYRtfJ/XkDQTKy', '2022-02-12', 'USER'),
                                                                                              ('student_nora', 'nora@example.com', NULL, 'pass_009', '2022-02-15', 'USER'),
                                                                                              ('student_carla', 'carla@example.com', NULL, 'pass_010', '2022-02-17', 'USER'),
                                                                                              ('student_tomas', 'tomas@example.com', NULL, 'pass_011', '2022-03-01', 'USER'),
@@ -26,7 +28,7 @@ INSERT INTO users (username, email, profile_picture_url, encrypted_password, cre
                                                                                              ('student_claudia', 'claudia@example.com', NULL, 'pass_015', '2022-03-09', 'USER'),
                                                                                              ('student_raul', 'raul@example.com', NULL, 'pass_016', '2022-03-11', 'USER'),
 
-                                                                                             ('teacher_elena', 'elena@example.com', NULL, 'pass_017', '2022-03-20', 'ADMIN'),
+                                                                                             ('teacher_elena', 'elena@example.com', NULL, '$2a$12$NFPD3vCFkuXc9LdwHTQc5em92SLYqNrAG2tfjaNWYRtfJ/XkDQTKy', '2022-03-20', 'ADMIN'),
                                                                                              ('teacher_adrian', 'adrian@example.com', NULL, 'pass_018', '2022-03-25', 'ADMIN'),
                                                                                              ('teacher_brian', 'brian@example.com', NULL, 'pass_019', '2022-03-28', 'ADMIN'),
                                                                                              ('teacher_roberta', 'roberta@example.com', NULL, 'pass_020', '2022-04-05', 'ADMIN'),
@@ -179,3 +181,5 @@ insert into levels (name) values
                               ('Intermediate'),
                               ('Advanced');
 
+insert into sessions (token, user_id) values
+                        ('token', 1);
