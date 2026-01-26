@@ -83,6 +83,9 @@ public class UserDaoJpaImpl implements UserDao {
             throw new  RuntimeException("User not found with id: " + entity.getId());
         }
 
+        if (entity.getEncryptedPassword() == null){
+            entity.setEncryptedPassword(userJpaEntity.getEncryptedPassword());
+        }
         userJpaEntity.getCoursesTaken().clear();
         return entityManager.merge(entity);
     }
