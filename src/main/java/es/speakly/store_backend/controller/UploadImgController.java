@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/speakly/upload")
+@RequestMapping("api/speakly/upload")
 public class UploadImgController {
 
     @Autowired

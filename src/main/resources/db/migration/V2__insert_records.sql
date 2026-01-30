@@ -3,17 +3,17 @@
 -- ================
 
 INSERT INTO users (username, email, profile_picture_url, encrypted_password, created_at, role) VALUES
-                                                                                             ('admin', 'admin@example.com', 'https://example.com/admin.png', '$2a$12$NFPD3vCFkuXc9LdwHTQc5em92SLYqNrAG2tfjaNWYRtfJ/XkDQTKy', '2020-05-20', 'ADMIN'),
                                                                                              ('teacher_john', 'john@example.com', 'https://example.com/john.png', '$2a$12$NFPD3vCFkuXc9LdwHTQc5em92SLYqNrAG2tfjaNWYRtfJ/XkDQTKy', '2020-05-20', 'ADMIN'),
                                                                                              ('pepe', 'pepe@example.com', 'https://example.com/pepe.png', '$2a$12$NFPD3vCFkuXc9LdwHTQc5em92SLYqNrAG2tfjaNWYRtfJ/XkDQTKy', '2020-05-20', 'ADMIN'),
                                                                                              ('teacher_maria', 'maria@example.com', 'https://example.com/maria.png', 'encrypted_pass_456', '2020-07-30', 'ADMIN'),
-                                                                                             ('student_anna', 'anna@example.com', NULL, 'encrypted_pass_789', '2021-07-29', 'USER'),
-                                                                                             ('student_pedro', 'pedro@example.com', NULL, 'encrypted_pass_987', '2021-08-29','USER'),
+                                                                                             ('teacher_anna', 'anna@example.com', NULL, 'encrypted_pass_789', '2021-07-29', 'USER'),
+                                                                                             ('teacher_pedro', 'pedro@example.com', NULL, 'encrypted_pass_987', '2021-08-29','USER'),
                                                                                              ('teacher_lucas', 'lucas@example.com', NULL, 'pass_001', '2022-01-10', 'ADMIN'),
                                                                                              ('teacher_sara', 'sara@example.com', NULL, 'pass_002', '2022-01-15', 'ADMIN'),
                                                                                              ('teacher_claire', 'claire@example.com', NULL, 'pass_003', '2022-01-20', 'ADMIN'),
                                                                                              ('teacher_michael', 'michael@example.com', NULL, 'pass_004', '2022-02-01', 'ADMIN'),
                                                                                              ('teacher_julia', 'julia@example.com', NULL, 'pass_005', '2022-02-03', 'ADMIN'),
+                                                                                             ('admin', 'admin@example.com', 'https://example.com/admin.png', '$2a$12$NFPD3vCFkuXc9LdwHTQc5em92SLYqNrAG2tfjaNWYRtfJ/XkDQTKy', '2020-05-20', 'ADMIN'),
                                                                                              ('teacher_richard', 'richard@example.com', NULL, 'pass_006', '2022-02-05', 'ADMIN'),
 
 
@@ -25,8 +25,8 @@ INSERT INTO users (username, email, profile_picture_url, encrypted_password, cre
                                                                                              ('student_javier', 'javier@example.com', NULL, 'pass_012', '2022-03-02', 'USER'),
                                                                                              ('student_sonia', 'sonia@example.com', NULL, 'pass_013', '2022-03-05', 'USER'),
                                                                                              ('student_andres', 'andres@example.com', NULL, 'pass_014', '2022-03-08', 'USER'),
-                                                                                             ('student_claudia', 'claudia@example.com', NULL, 'pass_015', '2022-03-09', 'USER'),
-                                                                                             ('student_raul', 'raul@example.com', NULL, 'pass_016', '2022-03-11', 'USER'),
+                                                                                             ('teacher_claudia', 'claudia@example.com', NULL, 'pass_015', '2022-03-09', 'USER'),
+                                                                                             ('teacher_raul', 'raul@example.com', NULL, 'pass_016', '2022-03-11', 'USER'),
 
                                                                                              ('teacher_elena', 'elena@example.com', NULL, '$2a$12$NFPD3vCFkuXc9LdwHTQc5em92SLYqNrAG2tfjaNWYRtfJ/XkDQTKy', '2022-03-20', 'ADMIN'),
                                                                                              ('teacher_adrian', 'adrian@example.com', NULL, 'pass_018', '2022-03-25', 'ADMIN'),
