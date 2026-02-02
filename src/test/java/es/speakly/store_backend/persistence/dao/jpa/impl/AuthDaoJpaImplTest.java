@@ -20,7 +20,7 @@ import java.util.UUID;
 import static es.speakly.store_backend.domain.model.UserRole.USER;
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
+@DataJpaTest(properties = "spring.flyway.enabled=false")
 @Import(AuthJpaDaoImpl.class)
 public class AuthDaoJpaImplTest {
     @Autowired
@@ -33,6 +33,11 @@ public class AuthDaoJpaImplTest {
 
     @BeforeEach
     void setUp() {
+        entityManager.createQuery("DELETE FROM SessionJpaEntity").executeUpdate();
+        entityManager.createQuery("DELETE FROM UserJpaEntity").executeUpdate();
+        entityManager.flush();
+        entityManager.clear();
+
         userJpaEntity = new UserJpaEntity(
                 null,
                 "testuser",
@@ -45,6 +50,7 @@ public class AuthDaoJpaImplTest {
         );
         entityManager.persist(userJpaEntity);
         entityManager.flush();
+        entityManager.clear();
     }
 
     @Test
@@ -52,19 +58,19 @@ public class AuthDaoJpaImplTest {
 
         String token = "valid-token";
 
-        SessionJpaEntity session =
-                new SessionJpaEntity(token, userJpaEntity, LocalDateTime.now());
+        SessionJpaEntity session = new SessionJpaEntity(token, userJpaEntity, LocalDateTime.now());
         entityManager.persist(session);
         entityManager.flush();
+        entityManager.clear();
 
         Optional<LoginUserDto> result = authDao.findByToken(token);
 
 
         assertAll(
                 () -> assertTrue(result.isPresent()),
-                () -> assertEquals(userJpaEntity.getId(), result.get().id()),
-                () -> assertEquals(userJpaEntity.getEmail(), result.get().username()),
-                () -> assertEquals(userJpaEntity.getRole(), result.get().role())
+                () -> assertEquals(userJpaEntity.getId(), result.orElseThrow().id()),
+                () -> assertEquals(userJpaEntity.getEmail(), result.orElseThrow().username()),
+                () -> assertEquals(userJpaEntity.getRole(), result.orElseThrow().role())
         );
     }
 
@@ -76,14 +82,15 @@ public class AuthDaoJpaImplTest {
 
     @Test
     void createTokenForUser_success() {
+        Long before = authDao.count();
 
         UUID token = authDao.createTokenForUser(userJpaEntity.getId());
 
-        Long count = authDao.count();
+        Long after = authDao.count();
 
         assertAll(
                 () -> assertNotNull(token),
-                () -> assertEquals(1L, count)
+                () -> assertEquals(before + 1, after)
         );
     }
 
@@ -97,12 +104,15 @@ public class AuthDaoJpaImplTest {
     void deleteToken_success() {
         String token = "token-to-delete";
 
-        SessionJpaEntity session =
-                new SessionJpaEntity(token, userJpaEntity, LocalDateTime.now());
+        SessionJpaEntity session = new SessionJpaEntity(token, userJpaEntity, LocalDateTime.now());
         entityManager.persist(session);
         entityManager.flush();
+        entityManager.clear();
 
         authDao.deleteToken(token);
+
+        entityManager.flush();
+        entityManager.clear();
 
         Long count = authDao.count();
         assertEquals(0L, count);

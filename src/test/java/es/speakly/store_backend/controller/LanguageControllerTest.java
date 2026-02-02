@@ -1,4 +1,3 @@
-// src/test/java/es/speakly/store_backend/controller/LanguageControllerTest.java
 package es.speakly.store_backend.controller;
 
 import es.speakly.store_backend.domain.dto.LanguageDto;

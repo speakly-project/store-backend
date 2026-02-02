@@ -1,11 +1,11 @@
 package es.speakly.store_backend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import es.speakly.store_backend.annotations.AuthenticationInterceptor;
 import es.speakly.store_backend.controller.webmodel.request.CourseInsertRequest;
 import es.speakly.store_backend.controller.webmodel.request.CourseUpdateRequest;
 import es.speakly.store_backend.domain.dto.CourseDto;
+import es.speakly.store_backend.domain.dto.CourseFiltersDto;
 import es.speakly.store_backend.domain.dto.UserDto;
 import es.speakly.store_backend.domain.model.Page;
 import es.speakly.store_backend.domain.service.CourseService;
@@ -13,9 +13,9 @@ import es.speakly.store_backend.domain.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -26,12 +26,13 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CourseController.class)
 public class CourseControllerTest {
@@ -51,6 +52,8 @@ public class CourseControllerTest {
     private AuthenticationInterceptor authenticationInterceptor;
 
     private CourseDto courseDto;
+    private CourseDto courseDto2;
+    private CourseDto courseDto3;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -70,15 +73,94 @@ public class CourseControllerTest {
                 10,
                 LocalDateTime.now()
         );
+        courseDto2 = new CourseDto(
+                2L,
+                "Spanish B1",
+                "Intermediate Spanish",
+                new BigDecimal("29.99"),
+                "Spanish",
+                "B1",
+                new UserDto(11L, null, null, null, null, null, List.of(), null),
+                15,
+                LocalDateTime.now()
+        );
+        courseDto3 = new CourseDto(
+                3L,
+                "German C1",
+                "Advanced German",
+                new BigDecimal("39.99"),
+                "German",
+                "C1",
+                new UserDto(12L, null, null, null, null, null, List.of(), null),
+                20,
+                LocalDateTime.now()
+        );
+
     }
 
-    @BeforeEach
-    void resetMocks() {
-        Mockito.reset(courseService);
-    }
+
 
     @Nested
     class GetTests {
+        @Test
+        void shouldReturnAllCourses_withNoFilters() throws Exception {
+            List<CourseDto> courses = List.of(courseDto, courseDto2, courseDto3);
+            Page<CourseDto> coursePage = new Page<>(courses, 1, 10, courses.size());
+
+            when(courseService.getAll(eq(1), eq(10), any(CourseFiltersDto.class))).thenReturn(coursePage);
+
+            mockMvc.perform(get("/api/speakly/courses")
+                            .param("pageNumber", "1")
+                            .param("pageSize", "10"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType("application/json"))
+                    .andExpect(jsonPath("$.data").isArray())
+                    .andExpect(jsonPath("$.data.length()").value(3))
+                    .andExpect(jsonPath("$.pageNumber").value(1))
+                    .andExpect(jsonPath("$.pageSize").value(10))
+                    .andExpect(jsonPath("$.totalElements").value(3))
+                    .andExpect(jsonPath("$.data[0].id").value(courses.getFirst().id()))
+                    .andExpect(jsonPath("$.data[2].id").value(courses.getLast().id()));
+
+            verify(courseService).getAll(eq(1), eq(10), any(CourseFiltersDto.class));
+        }
+
+        @Test
+        void shouldReturnFilteredCourses() throws Exception {
+            List<CourseDto> filteredCourses = List.of(courseDto);
+            Page<CourseDto> filteredPage = new Page<>(filteredCourses, 1, 10, 1L);
+
+            when(courseService.getAll(eq(1), eq(10), any(CourseFiltersDto.class))).thenReturn(filteredPage);
+
+            mockMvc.perform(get("/api/speakly/courses")
+                            .param("pageNumber", "1")
+                            .param("pageSize", "10")
+                            .param("language", "English")
+                            .param("level", "A1")
+                            .param("minPrice", "10")
+                            .param("maxPrice", "30")
+                            .param("sortBy", "priceAsc"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType("application/json"))
+                    .andExpect(jsonPath("$.data").isArray())
+                    .andExpect(jsonPath("$.data.length()").value(1))
+                    .andExpect(jsonPath("$.pageNumber").value(1))
+                    .andExpect(jsonPath("$.pageSize").value(10))
+                    .andExpect(jsonPath("$.totalElements").value(1))
+                    .andExpect(jsonPath("$.data[0].id").value(filteredCourses.getFirst().id()));
+
+            ArgumentCaptor<CourseFiltersDto> captor = ArgumentCaptor.forClass(CourseFiltersDto.class);
+            verify(courseService).getAll(eq(1), eq(10), captor.capture());
+
+            CourseFiltersDto usedFilters = captor.getValue();
+            assertAll(
+                    () -> org.junit.jupiter.api.Assertions.assertEquals("English", usedFilters.language()),
+                    () -> org.junit.jupiter.api.Assertions.assertEquals("A1", usedFilters.level()),
+                    () -> org.junit.jupiter.api.Assertions.assertEquals(10, usedFilters.minPrice()),
+                    () -> org.junit.jupiter.api.Assertions.assertEquals(30, usedFilters.maxPrice()),
+                    () -> org.junit.jupiter.api.Assertions.assertEquals("priceAsc", usedFilters.sortBy())
+            );
+        }
 
         @Test
         void shouldReturnCourseById() throws Exception {

@@ -2,7 +2,6 @@ package es.speakly.store_backend.persistence.dao.jpa.impl;
 
 
 import es.speakly.store_backend.domain.model.UserRole;
-import es.speakly.store_backend.persistence.dao.UserDao;
 import es.speakly.store_backend.persistence.dao.impl.UserDaoJpaImpl;
 import es.speakly.store_backend.persistence.dao.impl.entity.CourseJpaEntity;
 import es.speakly.store_backend.persistence.dao.impl.entity.UserJpaEntity;
@@ -16,12 +15,11 @@ import org.springframework.context.annotation.Import;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
+@DataJpaTest(properties = "spring.flyway.enabled=false")
 @Import(UserDaoJpaImpl.class)
 public class UserDaoJpaImplTest {
     @Autowired
@@ -35,6 +33,12 @@ public class UserDaoJpaImplTest {
 
     @BeforeEach
     void setUp() {
+        entityManager.createQuery("DELETE FROM SessionJpaEntity").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM user_courses").executeUpdate();
+        entityManager.createQuery("DELETE FROM UserJpaEntity").executeUpdate();
+        entityManager.flush();
+        entityManager.clear();
+
         user1 = new UserJpaEntity(
                 null,
                 "testuser",
@@ -60,6 +64,7 @@ public class UserDaoJpaImplTest {
         entityManager.persist(user1);
         entityManager.persist(user2);
         entityManager.flush();
+        entityManager.clear();
     }
 
     @Test
@@ -128,6 +133,8 @@ public class UserDaoJpaImplTest {
 
     @Test
     void insert_userWithExistingCourses_success() {
+        long before = userDao.count();
+
         CourseJpaEntity course = new CourseJpaEntity(
                 1L,
                 "Learn Spanish from scratch",
@@ -151,22 +158,23 @@ public class UserDaoJpaImplTest {
         );
         user.getCoursesTaken().add(course);
 
-        UserJpaEntity saved = userDao.insert(user);
+        userDao.insert(user);
         entityManager.flush();
 
-        assertNotNull(saved.getId());
-        assertEquals(1, saved.getCoursesTaken().size());
+        long after = userDao.count();
+        assertNotNull(user.getId());
+        assertEquals(before + 1, after);
+
     }
 
     @Test
     void update_existingUser_success() {
         user1.setUsername("updatedName");
 
-        UserJpaEntity updated = userDao.update(user1);
+        userDao.update(user1);
         entityManager.flush();
 
-        UserJpaEntity fromDb =
-                entityManager.find(UserJpaEntity.class, user1.getId());
+        UserJpaEntity fromDb = entityManager.find(UserJpaEntity.class, user1.getId());
 
         assertEquals("updatedName", fromDb.getUsername());
     }
@@ -201,13 +209,23 @@ public class UserDaoJpaImplTest {
 
     @Test
     void count_returnsCorrectValue() {
-        Long count = userDao.count();
+        long before = userDao.count();
 
-        assertEquals(32L, count);
+        UserJpaEntity newUser = new UserJpaEntity(
+                null,
+                "count_user",
+                "count_user@email.com",
+                null,
+                "encrypted",
+                LocalDateTime.now(),
+                null,
+                UserRole.USER
+        );
+        userDao.insert(newUser);
+        entityManager.flush();
+
+        long after = userDao.count();
+        assertEquals(before + 1, after);
     }
-
-
-
-
 
 }

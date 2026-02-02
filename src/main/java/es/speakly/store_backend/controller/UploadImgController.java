@@ -23,6 +23,7 @@ public class UploadImgController {
 
         long timestamp = System.currentTimeMillis() / 1000;
 
+
         Map<String, Object> params = ObjectUtils.asMap(
                 "timestamp", timestamp,
                 "folder", "profiles"

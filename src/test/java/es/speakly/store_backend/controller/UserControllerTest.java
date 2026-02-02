@@ -7,25 +7,18 @@ import es.speakly.store_backend.controller.webmodel.request.UserInsertRequest;
 import es.speakly.store_backend.domain.dto.UserDto;
 import es.speakly.store_backend.domain.model.Page;
 import es.speakly.store_backend.domain.service.UserService;
+import es.speakly.store_backend.domain.usecase.PasswdUpdateUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -33,7 +26,7 @@ import static es.speakly.store_backend.domain.model.UserRole.USER;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import es.speakly.store_backend.domain.model.UserRole;
+
 @WebMvcTest(UserController.class)
 public class UserControllerTest {
 
@@ -46,9 +39,12 @@ public class UserControllerTest {
     @MockitoBean
     private UserService userService;
 
+    @MockitoBean
+    private PasswdUpdateUseCase passwdUpdateUseCase;
+
     @BeforeEach
     void resetMocks() {
-        Mockito.reset(userService);
+        Mockito.reset(userService, passwdUpdateUseCase);
     }
 
     @MockitoBean
@@ -260,5 +256,89 @@ public class UserControllerTest {
                         .content("{}"))
                 .andExpect(status().isBadRequest());
     }
-}
 
+    @Test
+    void updateUserAdmin_shouldReturnOkAndUpdatedUser() throws Exception {
+        UserDto updatedUser = new UserDto(
+                1L,
+                "new_username",
+                "new_username@example.es",
+                null,
+                "ignored",
+                LocalDateTime.now(),
+                List.of(),
+                USER
+        );
+
+        String requestJson = """
+                {
+                  "id": 1,
+                  "username": "new_username",
+                  "email": "new_username@example.es",
+                  "profilePictureUrl": null,
+                  "password": null,
+                  "createAt": null,
+                  "coursesIds": [],
+                  "role": "USER"
+                }
+                """;
+
+        when(userService.updateUser(any(UserDto.class))).thenReturn(updatedUser);
+
+        mockMvc.perform(put("/api/speakly/users/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.username").value("new_username"))
+                .andExpect(jsonPath("$.email").value("new_username@example.es"))
+                .andExpect(jsonPath("$.coursesTaken").isArray());
+
+        verify(userService).updateUser(any(UserDto.class));
+        verifyNoMoreInteractions(userService);
+    }
+
+    @Test
+    void updateMyUser_shouldReturnOkAndNotAdminResponse() throws Exception {
+        UserDto updatedUser = new UserDto(
+                5L,
+                "me_new",
+                "me_new@example.es",
+                "http://pic",
+                "ignored",
+                LocalDateTime.now(),
+                List.of(),
+                USER
+        );
+
+        String requestJson = """
+                {
+                  "id": 5,
+                  "username": "me_new",
+                  "email": "me_new@example.es",
+                  "profilePictureUrl": "http://pic",
+                  "password": null,
+                  "createAt": null,
+                  "coursesIds": [],
+                  "role": "USER"
+                }
+                """;
+
+        when(userService.updateUser(any(UserDto.class))).thenReturn(updatedUser);
+
+        var result = mockMvc.perform(put("/api/speakly/users/me")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(jsonPath("$.id").value(5))
+                .andExpect(jsonPath("$.username").value("me_new"))
+                .andExpect(jsonPath("$.email").value("me_new@example.es"))
+                .andExpect(jsonPath("$.profilePictureUrl").value("http://pic"))
+                .andReturn();
+
+        verify(userService).updateUser(any(UserDto.class));
+        verifyNoMoreInteractions(userService);
+    }
+}
