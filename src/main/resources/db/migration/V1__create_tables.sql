@@ -57,61 +57,53 @@ CREATE TABLE sessions (
 
 );
 
--- CREATE TABLE user_roles (
---                             user_id UUID NOT NULL,
---                             role_name VARCHAR(50) NOT NULL,
---                             PRIMARY KEY (user_id, role_name),
---                             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
---                             FOREIGN KEY (role_name) REFERENCES roles(name) ON DELETE CASCADE
--- );
-
--- ================
--- COURSES
--- ================
 
 
--- ================
--- SHOPPING CART
--- ================
-
--- CREATE TABLE shopping_carts (
---                                 id UUID PRIMARY KEY,
---                                 student_id UUID NOT NULL UNIQUE,
---                                 total_price NUMERIC(12,2) DEFAULT 0,
---                                 last_updated TIMESTAMP DEFAULT NOW(),
---                                 FOREIGN KEY (student_id) REFERENCES users(id)
--- );
---
--- CREATE TABLE cart_items (
---                             id UUID PRIMARY KEY,
---                             shopping_cart_id UUID NOT NULL,
---                             course_id UUID NOT NULL,
---                             price NUMERIC(12,2) NOT NULL,
---                             FOREIGN KEY (shopping_cart_id) REFERENCES shopping_carts(id) ON DELETE CASCADE,
---                             FOREIGN KEY (course_id) REFERENCES courses(id)
--- );
---
--- -- ================
--- -- ORDERS
--- -- ================
---
--- CREATE TABLE orders (
---                         id UUID PRIMARY KEY,
---                         student_id UUID NOT NULL,
---                         total_paid NUMERIC(12,2) NOT NULL,
---                         status VARCHAR(50) NOT NULL,
---                         purchase_date TIMESTAMP NOT NULL DEFAULT NOW(),
---                         FOREIGN KEY (student_id) REFERENCES users(id)
--- );
---
 -- CREATE TABLE order_items (
---                              id UUID PRIMARY KEY,
---                              order_id UUID NOT NULL,
---                              course_id UUID NOT NULL,
---                              paid_price NUMERIC(12,2) NOT NULL,
+--                              id INT AUTO_INCREMENT PRIMARY KEY,
+--                              user_id INT NOT NULL,
+--                              course_id INT NOT NULL,
+--                              total_price NUMERIC(12,2) NOT NULL,
 --                              access_expiry DATE,
---                              FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+--                              FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
 --                              FOREIGN KEY (course_id) REFERENCES courses(id)
 -- );
 
--- FIN DEL ARCHIVO
+--
+-- CREATE TABLE cart_items (
+--                             id INT AUTO_INCREMENT PRIMARY KEY,
+--                             order_items_id INT NOT NULL,
+--                             course_id INT NOT NULL,
+--                             price NUMERIC(12,2) NOT NULL,
+--                             purchase_date TIMESTAMP NOT NULL DEFAULT NOW(),
+--                             FOREIGN KEY (order_items_id) REFERENCES order_items(id) ON DELETE CASCADE,
+--                             FOREIGN KEY (course_id) REFERENCES courses(id)
+-- );
+
+CREATE TABLE orders (
+                             id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                             user_id INT NOT NULL,
+                             order_status ENUM('PENDING', 'PROCESSING','PAYED') NOT NULL DEFAULT 'PENDING',
+                             paid_date timestamp NULL DEFAULT NULL,
+                             createdAt timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                             KEY orders_FK (user_id),
+                             CONSTRAINT orders_FK FOREIGN KEY (user_id) REFERENCES users (id)
+                                 ON DELETE CASCADE
+                                 ON UPDATE CASCADE
+);
+
+CREATE TABLE order_items (
+                                  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                                  order_id INT NOT NULL,
+                                  course_id INT NOT NULL,
+                                  base_price DECIMAL(19,2) NOT NULL,
+                                  quantity int(11) NOT NULL,
+                                  KEY order_items_order_FK (order_id),
+                                  KEY order_items_course_FK (course_id),
+                                  CONSTRAINT order_items_order_FK FOREIGN KEY (order_id) REFERENCES orders (id)
+                                      ON DELETE CASCADE
+                                      ON UPDATE CASCADE,
+                                  CONSTRAINT order_items_product_FK FOREIGN KEY (course_id) REFERENCES courses (id)
+                                      ON DELETE CASCADE
+                                      ON UPDATE CASCADE
+);

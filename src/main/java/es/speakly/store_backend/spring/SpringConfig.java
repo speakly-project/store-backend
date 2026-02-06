@@ -3,37 +3,14 @@ package es.speakly.store_backend.spring;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import es.speakly.store_backend.domain.repository.AuthRepository;
-import es.speakly.store_backend.domain.repository.CourseRepository;
-import es.speakly.store_backend.domain.repository.LevelRepository;
-import es.speakly.store_backend.domain.repository.UserRepository;
-import es.speakly.store_backend.domain.service.AuthService;
-import es.speakly.store_backend.domain.service.CourseService;
-import es.speakly.store_backend.domain.service.LanguageService;
-import es.speakly.store_backend.domain.service.LevelService;
-import es.speakly.store_backend.domain.service.UserService;
-import es.speakly.store_backend.domain.service.impl.AuthServiceImpl;
-import es.speakly.store_backend.domain.service.impl.CourseServiceImpl;
-import es.speakly.store_backend.domain.service.impl.LanguageServiceImpl;
-import es.speakly.store_backend.domain.service.impl.LevelServiceImpl;
-import es.speakly.store_backend.domain.service.impl.UserServiceImpl;
+import es.speakly.store_backend.domain.repository.*;
+import es.speakly.store_backend.domain.service.*;
+import es.speakly.store_backend.domain.service.impl.*;
 import es.speakly.store_backend.domain.usecase.PasswdUpdateUseCase;
 import es.speakly.store_backend.filters.AuthFilter;
-import es.speakly.store_backend.persistence.dao.AuthDao;
-import es.speakly.store_backend.persistence.dao.CourseDao;
-import es.speakly.store_backend.persistence.dao.LanguageDao;
-import es.speakly.store_backend.persistence.dao.LevelDao;
-import es.speakly.store_backend.persistence.dao.UserDao;
-import es.speakly.store_backend.persistence.dao.impl.AuthJpaDaoImpl;
-import es.speakly.store_backend.persistence.dao.impl.CourseDaoJpaImpl;
-import es.speakly.store_backend.persistence.dao.impl.LanguageDaoJpaImpl;
-import es.speakly.store_backend.persistence.dao.impl.LevelDaoJpaImpl;
-import es.speakly.store_backend.persistence.dao.impl.UserDaoJpaImpl;
-import es.speakly.store_backend.persistence.repository.AuthRepositoryImpl;
-import es.speakly.store_backend.persistence.repository.CourseRepositoryImpl;
-import es.speakly.store_backend.persistence.repository.LanguageRepositoryImpl;
-import es.speakly.store_backend.persistence.repository.LevelRepositoryImpl;
-import es.speakly.store_backend.persistence.repository.UserRepositoryImpl;
+import es.speakly.store_backend.persistence.dao.*;
+import es.speakly.store_backend.persistence.dao.impl.*;
+import es.speakly.store_backend.persistence.repository.*;
 import es.speakly.store_backend.usecase.PasswdUpdateUseCaseImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -148,5 +125,20 @@ public class SpringConfig {
     @Bean
     public LevelService levelService(LevelRepository levelRepository) {
         return new LevelServiceImpl(levelRepository);
+    }
+
+    @Bean
+    public CartService cartService(OrderRepository orderRepository, UserService userService, CourseService courseService) {
+        return new CartServiceImpl(orderRepository, userService, courseService);
+    }
+
+    @Bean
+    public OrderRepository orderRepository(OrderDao orderDao) {
+        return new OrderRepositoryImpl(orderDao);
+    }
+
+    @Bean
+    public OrderDao orderDao() {
+        return new OrderJpaDaoImpl();
     }
 }
