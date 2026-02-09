@@ -85,7 +85,7 @@ CREATE TABLE orders (
                              user_id INT NOT NULL,
                              order_status ENUM('PENDING', 'PROCESSING','PAYED') NOT NULL DEFAULT 'PENDING',
                              paid_date timestamp NULL DEFAULT NULL,
-                             createdAt timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                             created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
                              KEY orders_FK (user_id),
                              CONSTRAINT orders_FK FOREIGN KEY (user_id) REFERENCES users (id)
                                  ON DELETE CASCADE
