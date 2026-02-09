@@ -27,6 +27,8 @@ public class OrderItemJpaEntity implements Serializable {
     @Column(nullable = false)
     private Long quantity;
 
+    public OrderItemJpaEntity() {}
+
     public OrderItemJpaEntity(Long id, OrderJpaEntity order, CourseJpaEntity course, BigDecimal basePrice, Long quantity) {
         this.id = id;
         this.order = order;

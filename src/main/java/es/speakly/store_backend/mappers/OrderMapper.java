@@ -3,6 +3,7 @@ package es.speakly.store_backend.mappers;
 import es.speakly.store_backend.controller.webmodel.request.OrderUpdateRequest;
 import es.speakly.store_backend.controller.webmodel.response.OrderItemResponse;
 import es.speakly.store_backend.controller.webmodel.response.OrderResponse;
+import es.speakly.store_backend.domain.dto.CourseDto;
 import es.speakly.store_backend.domain.dto.OrderDto;
 import es.speakly.store_backend.domain.dto.OrderItemDto;
 import es.speakly.store_backend.domain.dto.UserDto;
@@ -12,6 +13,7 @@ import es.speakly.store_backend.domain.model.OrderStatus;
 import es.speakly.store_backend.persistence.dao.impl.entity.OrderItemJpaEntity;
 import es.speakly.store_backend.persistence.dao.impl.entity.OrderJpaEntity;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -147,10 +149,15 @@ public class OrderMapper {
         List<OrderItemDto> courses = new ArrayList<>();
         if (orderUpdateRequest.courseIds() != null) {
             courses = Arrays.stream(orderUpdateRequest.courseIds())
-                    .map(id -> new OrderItemDto(id, null, null, null))
+                    .filter(id -> id != null)
+                    .map(courseId -> new OrderItemDto(
+                            null,
+                            new CourseDto(courseId, null, null, null, null, null, null, 0, null),
+                            1L,
+                            BigDecimal.ZERO
+                    ))
                     .collect(Collectors.toList());
         }
-
 
         return new OrderDto(
                 null,
