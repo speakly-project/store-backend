@@ -33,7 +33,7 @@ public class CartController {
 
     @PutMapping
     public ResponseEntity<Void> updateCart(@RequestBody OrderUpdateRequest orderUpdateRequest){
-        UserDto userDto = userService.getById(orderUpdateRequest.id());
+        UserDto userDto = userService.getById(orderUpdateRequest.userId());
 
         OrderDto orderDto = OrderMapper.fromOrderUpdateRequestToOrderDto(orderUpdateRequest, userDto);
         cartService.updatePendingCart(orderDto);
