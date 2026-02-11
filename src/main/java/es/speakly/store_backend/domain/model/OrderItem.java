@@ -14,15 +14,15 @@ public class OrderItem {
         Course = course;
         this.quantity = quantity;
         this.price = price;
-        this.price = calculatePrice();
+        //this.price = calculatePrice();
     }
 
-    private BigDecimal calculatePrice() {
-        if (this.price == null) return null;
-
-        BigDecimal ivaMultiplier = new BigDecimal("1.21");
-        return this.price.multiply(ivaMultiplier).setScale(2, RoundingMode.HALF_UP);
-    }
+//    private BigDecimal calculatePrice() {
+//        if (this.price == null) return null;
+//
+//        BigDecimal ivaMultiplier = new BigDecimal("1.21");
+//        return this.price.multiply(ivaMultiplier).setScale(2, RoundingMode.HALF_UP);
+//    }
 
     public BigDecimal getPrice() {
         return price;
