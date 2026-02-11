@@ -153,11 +153,17 @@ public class CartServiceImpl implements CartService {
         if (orderDto.items() != null && !orderDto.items().isEmpty()) {
             for (OrderItemDto item : orderDto.items()) {
                 CourseDto fullProduct = courseService.getById(item.course().id());
+
+                BigDecimal basePrice = item.price();
+                if (basePrice == null || BigDecimal.ZERO.compareTo(basePrice) == 0) {
+                    basePrice = fullProduct.price();
+                }
+
                 OrderItemDto resolvedItem = new OrderItemDto(
                         item.id(),
                         fullProduct,
                         item.quantity(),
-                        item.price()
+                        basePrice
                 );
                 resolvedItems.add(resolvedItem);
             }
@@ -236,11 +242,18 @@ public class CartServiceImpl implements CartService {
         if (orderDto.items() != null && !orderDto.items().isEmpty()) {
             for (OrderItemDto item : orderDto.items()) {
                 CourseDto fullProduct = courseService.getById(item.course().id());
+
+                // Si el front no manda precio/basePrice, lo tomamos del curso.
+                BigDecimal basePrice = item.price();
+                if (basePrice == null || BigDecimal.ZERO.compareTo(basePrice) == 0) {
+                    basePrice = fullProduct.price();
+                }
+
                 OrderItemDto resolvedItem = new OrderItemDto(
                         item.id(),
                         fullProduct,
                         item.quantity(),
-                        item.price()
+                        basePrice
                 );
                 resolvedItems.add(resolvedItem);
             }

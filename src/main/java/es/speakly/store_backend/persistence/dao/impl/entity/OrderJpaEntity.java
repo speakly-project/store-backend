@@ -33,7 +33,7 @@ public class OrderJpaEntity implements Serializable {
 
     @Column(name = "paid_date")
     private LocalDateTime paidDate;
-    @Column(name = "createdAt", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     public OrderJpaEntity() {}
