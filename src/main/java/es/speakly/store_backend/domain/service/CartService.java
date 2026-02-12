@@ -10,4 +10,5 @@ public interface CartService {
     OrderStatus getCartStatus(Long id);
     void updatePendingCart(OrderDto orderDto);
     void updateCart(OrderDto orderDto);
+    void payCart(Long userId, String cardNumber, String expiryDate, String cvv, String fullName);
 }

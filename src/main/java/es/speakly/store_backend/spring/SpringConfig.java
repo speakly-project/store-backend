@@ -8,6 +8,10 @@ import es.speakly.store_backend.domain.service.*;
 import es.speakly.store_backend.domain.service.impl.*;
 import es.speakly.store_backend.domain.usecase.PasswdUpdateUseCase;
 import es.speakly.store_backend.filters.AuthFilter;
+import es.speakly.store_backend.nanoServices.http.impl.HttpClientServiceImpl;
+import es.speakly.store_backend.nanoServices.payment.CardPaymentService;
+import es.speakly.store_backend.nanoServices.http.HttpClientService;
+import es.speakly.store_backend.nanoServices.payment.CardPaymentServiceImpl;
 import es.speakly.store_backend.persistence.dao.*;
 import es.speakly.store_backend.persistence.dao.impl.*;
 import es.speakly.store_backend.persistence.repository.*;
@@ -30,6 +34,18 @@ public class SpringConfig {
 
     @Value("${cloudinary.api-secret}")
     private String apiSecret;
+
+    @Value("${bank.api.base-url}")
+    private String bankApiBaseUrl;
+
+    @Value("${bank.api.username}")
+    private String bankApiUsername;
+
+    @Value("${bank.api.key}")
+    private String bankApiKey;
+
+    @Value("${bank.api.destination-iban}")
+    private String bankApiDestinationIban;
 
     @Bean
     public Cloudinary cloudinary() {
@@ -128,8 +144,8 @@ public class SpringConfig {
     }
 
     @Bean
-    public CartService cartService(OrderRepository orderRepository, UserService userService, CourseService courseService) {
-        return new CartServiceImpl(orderRepository, userService, courseService);
+    public CartService cartService(OrderRepository orderRepository, UserService userService, CourseService courseService, CardPaymentService cardPaymentService) {
+        return new CartServiceImpl(orderRepository, userService, courseService, cardPaymentService);
     }
 
     @Bean
@@ -141,4 +157,5 @@ public class SpringConfig {
     public OrderDao orderDao() {
         return new OrderJpaDaoImpl();
     }
+
 }

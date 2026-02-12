@@ -36,6 +36,7 @@
         <com.h2database.version>2.3.232</com.h2database.version>
         <org.mindrot.version>0.4</org.mindrot.version>
         <cloudinary.version>1.38.0</cloudinary.version>
+        <apache.httpclient.version>5.4.4</apache.httpclient.version>
 	</properties>
 	<dependencies>
         <dependency>
@@ -84,6 +85,11 @@
             <groupId>org.mindrot</groupId>
             <artifactId>jbcrypt</artifactId>
             <version>${org.mindrot.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+            <version>${apache.httpclient.version}</version>
         </dependency>
 	</dependencies>
 

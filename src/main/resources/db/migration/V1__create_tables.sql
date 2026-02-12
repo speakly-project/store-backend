@@ -81,15 +81,14 @@ CREATE TABLE sessions (
 -- );
 
 CREATE TABLE orders (
-                             id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                             user_id INT NOT NULL,
-                             order_status ENUM('PENDING', 'PROCESSING','PAYED') NOT NULL DEFAULT 'PENDING',
-                             paid_date timestamp NULL DEFAULT NULL,
-                             created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                             KEY orders_FK (user_id),
-                             CONSTRAINT orders_FK FOREIGN KEY (user_id) REFERENCES users (id)
-                                 ON DELETE CASCADE
-                                 ON UPDATE CASCADE
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    order_status ENUM('PENDING', 'PROCESSING','PAYED') NOT NULL DEFAULT 'PENDING',
+    paid_date timestamp NULL DEFAULT NULL,
+    created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT orders_FK FOREIGN KEY (user_id) REFERENCES users (id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
 CREATE TABLE order_items (

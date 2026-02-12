@@ -7,15 +7,16 @@ import es.speakly.store_backend.domain.dto.UserDto;
 import es.speakly.store_backend.domain.model.Order;
 import es.speakly.store_backend.domain.model.OrderStatus;
 import es.speakly.store_backend.domain.repository.OrderRepository;
-import es.speakly.store_backend.domain.repository.UserRepository;
 import es.speakly.store_backend.domain.service.CartService;
 import es.speakly.store_backend.domain.service.CourseService;
 import es.speakly.store_backend.domain.service.UserService;
 import es.speakly.store_backend.exceptions.BusinessException;
 import es.speakly.store_backend.exceptions.ResourceNotFoundException;
 import es.speakly.store_backend.exceptions.ValidationException;
+import es.speakly.store_backend.nanoServices.payment.CardPaymentService;
 import es.speakly.store_backend.mappers.OrderMapper;
 import es.speakly.store_backend.mappers.UserMapper;
+import es.speakly.store_backend.nanoServices.payment.dtos.OriginDto;
 import jakarta.transaction.Transactional;
 
 import java.math.BigDecimal;
@@ -29,11 +30,13 @@ public class CartServiceImpl implements CartService {
     private final OrderRepository orderRepository;
     private final UserService userService;
     private final CourseService courseService;
+    private final CardPaymentService cardPaymentService;
 
-    public CartServiceImpl(OrderRepository orderRepository, UserService userService, CourseService courseService) {
+    public CartServiceImpl(OrderRepository orderRepository, UserService userService, CourseService courseService, CardPaymentService cardPaymentService) {
         this.orderRepository = orderRepository;
         this.userService = userService;
         this.courseService = courseService;
+        this.cardPaymentService = cardPaymentService;
     }
 
 
@@ -285,5 +288,84 @@ public class CartServiceImpl implements CartService {
         );
 
         orderRepository.save(updatedCart);
+    }
+
+    @Override
+    @Transactional
+    public void payCart(Long userId, String cardNumber, String expiryDate, String cvv, String fullName) {
+        if (userId == null || userId <= 0) {
+            throw new ValidationException("User ID must be a positive number");
+        }
+        if (cardNumber == null || cardNumber.isBlank()) {
+            throw new ValidationException("Card number cannot be blank");
+        }
+        if (expiryDate == null || expiryDate.isBlank()) {
+            throw new ValidationException("Expiry date cannot be blank");
+        }
+        if (cvv == null || cvv.isBlank()) {
+            throw new ValidationException("CVV cannot be blank");
+        }
+        if (fullName == null || fullName.isBlank()) {
+            throw new ValidationException("Full name cannot be blank");
+        }
+
+        OrderDto activeCart = getCart(userId);
+
+        if (activeCart.status() != OrderStatus.PENDING) {
+            throw new BusinessException("Cart must be in PENDING status to be paid");
+        }
+
+        if (activeCart.items() == null || activeCart.items().isEmpty()) {
+            throw new BusinessException("Cannot pay for an empty cart");
+        }
+
+        BigDecimal totalPrice = activeCart.totalPrice();
+        if (totalPrice == null || totalPrice.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessException("Cart total price must be greater than zero");
+        }
+
+        // cart a processing
+        UserDto user = userService.getById(userId);
+        OrderDto processingCart = new OrderDto(
+                activeCart.id(),
+                user,
+                OrderStatus.PROCESSING,
+                activeCart.items(),
+                activeCart.totalPrice(),
+                null,
+                activeCart.createdAt()
+        );
+        orderRepository.save(processingCart);
+
+        // bank api
+        try {
+            OriginDto origen = new OriginDto(cardNumber, expiryDate, cvv, fullName);
+            cardPaymentService.processPayment(origen, totalPrice);
+        } catch (Exception e) {
+            //PENDING if payment fails
+            OrderDto rollbackCart = new OrderDto(
+                    activeCart.id(),
+                    user,
+                    OrderStatus.PENDING,
+                    activeCart.items(),
+                    activeCart.totalPrice(),
+                    null,
+                    activeCart.createdAt()
+            );
+            orderRepository.save(rollbackCart);
+            throw new BusinessException("Payment failed: " + e.getMessage());
+        }
+
+        OrderDto payedCart = new OrderDto(
+                activeCart.id(),
+                user,
+                OrderStatus.PAYED,
+                activeCart.items(),
+                activeCart.totalPrice(),
+                LocalDateTime.now(),
+                activeCart.createdAt()
+        );
+        orderRepository.save(payedCart);
+
     }
 }
