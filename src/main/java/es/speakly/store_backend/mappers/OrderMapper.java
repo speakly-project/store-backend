@@ -78,12 +78,15 @@ public class OrderMapper {
                     .toList();
         }
 
-        return new OrderJpaEntity(
+        OrderJpaEntity entity = new OrderJpaEntity(
                 order.id(),
                 UserMapper.fromUserDtoToUserEntity(order.user()),
                 order.status(),
                 orderItemJpaEntities
         );
+        entity.setPaidDate(order.paidDate());
+        entity.setCreatedAt(order.createdAt());
+        return entity;
     }
 
     public static OrderDto fromOrderEntityToOrderDto(OrderJpaEntity orderEntity) {
